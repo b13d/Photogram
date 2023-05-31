@@ -27,6 +27,7 @@ export default function Main() {
   const changeHangle = (element: React.FormEvent<HTMLInputElement>) => {
     if (
       element.currentTarget.files &&
+      element.currentTarget.files[0] !== undefined &&
       types.includes(element.currentTarget.files[0].type)
     ) {
       // console.log(element)

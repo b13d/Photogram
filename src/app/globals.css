@@ -6,3 +6,9 @@
 body {
   background-color: #f8f5e4;
 }
+
+.icon-add:hover {
+  filter: hue-rotate(15deg);
+  transition: 1s;
+  cursor: pointer;
+}

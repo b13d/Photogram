@@ -24,7 +24,7 @@ export default function Modal({
       sizes="(max-height: 400px) 100vw"
       src={url !== undefined ? url : ""}
       alt="img-modal"
-      className="fixed z-[1] max-h-screen inset-x-0 inset-y-[10vh] ml-auto mr-auto"
+      className="fixed z-[1] max-h-screen inset-x-0 inset-y-[10vh] m-auto"
     />
   );
 

@@ -1,20 +1,15 @@
-import {
-  collection,
-  getDocs,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import ConfigFirebase from "@/firebase/ConfigFirebase";
+// import {Api} from "@/app/components/ImagePhotogram";
+import { useContext } from "react";
+import { ApiContext } from "@/app/page";
 
-export function useFirestore(
-  setImages: React.Dispatch<React.SetStateAction<string[]>>
-) {
-  fetchData(setImages);
+export function useFirestore(currentFile: string, setImages: React.Dispatch<React.SetStateAction<string[]>>) {
+  fetchData(currentFile, setImages);
 }
 
-async function fetchData(
-  setImages: React.Dispatch<React.SetStateAction<string[]>>
-) {
+async function fetchData(currentFile: string, setImages: React.Dispatch<React.SetStateAction<string[]>>) {
+  // console.log(currentFile)
   const { db } = ConfigFirebase();
 
   const querySnapshot = collection(db, "images");
@@ -29,7 +24,8 @@ async function fetchData(
     listQuery.push(doc.data().url);
   });
 
-  console.log(listQuery)
-  
-  setImages(listQuery.reverse());
+  let imagesApi = listQuery.reverse()
+ 
+  setImages(imagesApi)
 }
+

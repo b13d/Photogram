@@ -1,10 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, createContext } from "react";
 import ImagePhoto from "./components/ImagePhotogram";
 import { useStorage } from "@/hooks/useStorage";
-import { useFirestore } from "@/hooks/useFirestore";
+import { useFirestore as UseFirestore } from "@/hooks/useFirestore";
+import { motion } from "framer-motion";
+
+export const ApiContext = createContext<string[]>([]);
+export const SetImagesContext = createContext<
+  React.Dispatch<React.SetStateAction<string[]>> | undefined
+>(undefined);
 
 export default function Main() {
   const [currentFile, setCurrentFile] = useState<string>("");
@@ -15,33 +21,37 @@ export default function Main() {
   );
   const types = ["image/png", "image/jpeg"];
   const linkStorage = useStorage;
-  const linkUseFirestore = useFirestore;
-
+  const linkUseFirestore = UseFirestore;
   const [imagesApi, setImages] = useState<string[]>([]);
 
   const changeHangle = (element: React.FormEvent<HTMLInputElement>) => {
-    debugger;
     if (
       element.currentTarget.files &&
       types.includes(element.currentTarget.files[0].type)
     ) {
+      // console.log(element)
+
       linkStorage(setCurrentFile, setProgress, element);
-      linkUseFirestore(setImages);
+      linkUseFirestore(currentFile, setImages);
     }
   };
 
   useEffect(() => {
-    linkUseFirestore(setImages);
+    linkUseFirestore(currentFile, setImages);
   }, [currentFile, linkUseFirestore]);
-
-  useEffect(() => {
-    console.log("Изменения прошли");
-    console.log(modalImage);
-  }, [modalBoolean, modalImage]);
 
   const handleCloseModal = () => {
     setModalBoolean(false);
     setModalImage(undefined);
+  };
+
+  const variants = {
+    visible: {
+      width: progress + "%",
+    },
+    initial: {
+      width: 0 + "%",
+    },
   };
 
   return (
@@ -50,7 +60,7 @@ export default function Main() {
         <>
           <div
             onClick={handleCloseModal}
-            className="bg-[#2727279c] fixed h-full w-full inset-x-0 inset-y-0"
+            className="bg-[#272727d1] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
           ></div>
           {modalImage}
         </>
@@ -67,7 +77,7 @@ export default function Main() {
           name="image-download"
           id="image-download"
           onChange={(e) => changeHangle(e)}
-          value={currentFile}
+          // value={currentFile}
         />
         <label htmlFor="image-download">
           <Image
@@ -78,20 +88,20 @@ export default function Main() {
             className="icon-add"
           />
         </label>
-        <div
-          style={{ width: progress !== undefined ? progress / 2 + "%" : "" }}
-          className="h-1  bg-orange-100"
-        ></div>
-        <ImagePhoto
-          currentFile={currentFile}
-          setModalBoolean={setModalBoolean}
-          setModalImage={setModalImage}
-        />
+        <motion.div
+          initial="initial"
+          animate="visible"
+          variants={variants}
+          className="h-1 bg-orange-300 self-start flex"
+        ></motion.div>
+        <ApiContext.Provider value={imagesApi}>
+          <ImagePhoto
+            currentFile={currentFile}
+            setModalBoolean={setModalBoolean}
+            setModalImage={setModalImage}
+          />
+        </ApiContext.Provider>
       </div>
     </div>
   );
-}
-
-export function ApiImages() {
-  
 }

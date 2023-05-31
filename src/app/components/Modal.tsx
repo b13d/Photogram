@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion"
 
 export interface ModalProps {
   url?: string;
@@ -17,17 +18,17 @@ export default function Modal({
   let tempBoolean = url !== undefined ? true : false;
 
   let tempImage = (
-    <Image
-      width={500}
-      height={500}
+    <motion.img
+      width={400}
+      height={400}
+      sizes="(max-height: 400px) 100vw"
       src={url !== undefined ? url : ""}
       alt="img-modal"
-      className="fixed inset-x-0 inset-y-[10vh] ml-auto mr-auto"
+      className="fixed z-[1] max-h-screen inset-x-0 inset-y-[10vh] ml-auto mr-auto"
     />
   );
 
   setModalBoolean !== undefined ? setModalBoolean(true) : ""
   setModalImage !== undefined ? setModalImage(tempImage) : ""
-  // console.log(tempBoolean);
   return { tempBoolean, tempImage };
 }

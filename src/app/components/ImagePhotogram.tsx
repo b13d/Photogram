@@ -1,9 +1,10 @@
 import ConfigFirebase from "@/firebase/ConfigFirebase";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import { listAll, getDownloadURL, ref } from "firebase/storage";
 import Modal from "./Modal";
-import Page from "../page"
+import { ApiContext } from "../page";
+import { motion } from "framer-motion";
 
 export interface ImageProps {
   currentFile: string;
@@ -18,13 +19,15 @@ export default function ImagePhoto({
   setModalBoolean,
   setModalImage,
 }: ImageProps) {
-
   const { storage } = ConfigFirebase();
   const [images, setImages] = useState<string[]>([]);
-  // const { imagesApi } = PhotoApi({ currentFile });
+
+  const imagesApi = useContext(ApiContext);
+
+  // console.log(imagesApi)
 
   useEffect(() => {
-    setImages(imagesApi);
+    setImages(imagesApi !== undefined ? imagesApi : []);
   }, [imagesApi, currentFile]);
 
   const handleWatchImage = (
@@ -32,7 +35,7 @@ export default function ImagePhoto({
     index: number
   ) => {
     Modal({
-      url: imagesApi[index],
+      url: imagesApi !== undefined ? imagesApi[index] : "",
       setModalBoolean: setModalBoolean,
       setModalImage: setModalImage,
     });
@@ -42,9 +45,12 @@ export default function ImagePhoto({
     <div className="grid grid-cols-3 gap-8">
       {images.map((value, index) => {
         return (
-          <Image
+          <motion.img
+            layout
+            whileHover={{ opacity: 1 }}
             onClick={(e) => handleWatchImage(e, index)}
-            style={{ height: 300 }}
+            style={{ height: 300, opacity: 0.8 }}
+            className="z-[0] object-cover"
             key={index}
             width={300}
             height={300}

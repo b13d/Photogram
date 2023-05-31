@@ -37,20 +37,19 @@ export function useStorage(
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          console.log("File available at", downloadURL);
-
+          setCurrentFile(downloadURL)
           try {
             const docRef = await addDoc(collection(db, "images"), {
               createdAt: Timestamp.now(),
               url: downloadURL,
             });
 
-            console.log(docRef.id);
+            // console.log(docRef.id);
           } catch (error) {
             console.log(error);
           }
 
-          setCurrentFile("");
+          // setCurrentFile("");
           setProgress(0);
         });
       }

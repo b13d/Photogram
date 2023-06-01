@@ -23,10 +23,6 @@ export default function ImagePhoto({
   const { storage } = ConfigFirebase();
   const [images, setImages] = useState<string[]>([]);
 
-  // const imagesApi = useContext(ApiContext);
-
-  // console.log(imagesApi)
-
   useEffect(() => {
     if (imagesApi !== undefined) setImages(imagesApi);
   }, [imagesApi, currentFile]);

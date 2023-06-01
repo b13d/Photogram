@@ -14,7 +14,6 @@ export function useStorage(
 
   if (element.currentTarget.files) {
     const file = element.currentTarget.files[0];
-
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     uploadTask.on(
@@ -37,7 +36,7 @@ export function useStorage(
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-          setCurrentFile(downloadURL)
+          setCurrentFile(downloadURL);
           try {
             const docRef = await addDoc(collection(db, "images"), {
               createdAt: Timestamp.now(),

@@ -2,7 +2,6 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import ConfigFirebase from "@/firebase/ConfigFirebase";
 // import {Api} from "@/app/components/ImagePhotogram";
 import { useContext } from "react";
-import { ApiContext } from "@/app/page";
 
 export function useFirestore(currentFile: string, setImages: React.Dispatch<React.SetStateAction<string[]>>) {
   fetchData(currentFile, setImages);

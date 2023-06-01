@@ -3,7 +3,6 @@ import { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import { listAll, getDownloadURL, ref } from "firebase/storage";
 import Modal from "./Modal";
-import { ApiContext } from "../page";
 import { motion } from "framer-motion";
 
 export interface ImageProps {
@@ -12,22 +11,24 @@ export interface ImageProps {
   setModalImage?: React.Dispatch<
     React.SetStateAction<React.JSX.Element | undefined>
   >;
+  imagesApi: string[];
 }
 
 export default function ImagePhoto({
   currentFile,
   setModalBoolean,
   setModalImage,
+  imagesApi,
 }: ImageProps) {
   const { storage } = ConfigFirebase();
   const [images, setImages] = useState<string[]>([]);
 
-  const imagesApi = useContext(ApiContext);
+  // const imagesApi = useContext(ApiContext);
 
   // console.log(imagesApi)
 
   useEffect(() => {
-    setImages(imagesApi !== undefined ? imagesApi : []);
+    if (imagesApi !== undefined) setImages(imagesApi);
   }, [imagesApi, currentFile]);
 
   const handleWatchImage = (

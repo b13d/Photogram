@@ -1,5 +1,9 @@
 "use client";
 
+export interface IAPI {
+  imagesApi: string[];
+}
+
 import Image from "next/image";
 import React, { useEffect, useState, createContext } from "react";
 import ImagePhoto from "./components/ImagePhotogram";
@@ -7,10 +11,7 @@ import { useStorage } from "@/hooks/useStorage";
 import { useFirestore as UseFirestore } from "@/hooks/useFirestore";
 import { motion } from "framer-motion";
 
-export const ApiContext = createContext<string[]>([]);
-export const SetImagesContext = createContext<
-  React.Dispatch<React.SetStateAction<string[]>> | undefined
->(undefined);
+// export const ApiContext: React.Context<string[]> = createContext<string[]>([]);
 
 export default function Main() {
   const [currentFile, setCurrentFile] = useState<string>("");
@@ -95,13 +96,12 @@ export default function Main() {
           variants={variants}
           className="h-1 bg-orange-300 self-start flex"
         ></motion.div>
-        <ApiContext.Provider value={imagesApi}>
-          <ImagePhoto
-            currentFile={currentFile}
-            setModalBoolean={setModalBoolean}
-            setModalImage={setModalImage}
-          />
-        </ApiContext.Provider>
+        <ImagePhoto
+          currentFile={currentFile}
+          setModalBoolean={setModalBoolean}
+          setModalImage={setModalImage}
+          imagesApi={imagesApi}
+        />
       </div>
     </div>
   );

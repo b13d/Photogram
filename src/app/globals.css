@@ -7,6 +7,11 @@ body {
   background-color: #f8f5e4;
 }
 
+.icon-add {
+  transition: 1s;
+}
+
+
 .icon-add:hover {
   filter: hue-rotate(15deg);
   transition: 1s;

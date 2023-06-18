@@ -88,12 +88,12 @@ export default function Main() {
               onClick={() => handleCloseModal()}
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
-            <div className="fixed justify-center sm:w-[1300px] items-center z-50 left-0 right-0  m-auto top-[30%]">
+            <div className="fixed justify-center sm:w-[1300px] items-center z-50 left-0 right-0  m-auto max-sm:top-[50%] top-[30%]">
               <div className="flex items-center m-auto justify-between">
                 {currentIndex !== undefined ? (
                   <span
                     onClick={() => handleBackImage(currentIndex[1])}
-                    className="cursor-pointer  text-[#ffd392]  text-[70px]"
+                    className="cursor-pointer   text-[#ffd392]  text-[70px]"
                   >
                     &#60;
                   </span>
@@ -106,7 +106,7 @@ export default function Main() {
 
                   if (index === 1) {
                     styleImage =
-                      "z-10 max-sm:w-[200px] max-sm:h-auto max-w-[800px] h-[300px]";
+                      "z-10 max-sm:w-[200px] max-sm:scale-125  max-sm:max-h-[300px] max-w-[700px] sm:h-[300px]";
                   } else
                     styleImage =
                       "max-sm:hidden max-w-[300px] h-[150px] brightness-50";

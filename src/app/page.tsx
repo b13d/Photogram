@@ -11,6 +11,7 @@ import { useStorage } from "@/hooks/useStorage";
 import { useFirestore as UseFirestore } from "@/hooks/useFirestore";
 import { motion } from "framer-motion";
 import Footer from "./components/Footer";
+import Head from "next/head";
 
 // export const ApiContext: React.Context<string[]> = createContext<string[]>([]);
 
@@ -58,6 +59,16 @@ export default function Main() {
     },
   };
 
+  useEffect(() => {
+    if (modalBoolean) {
+      document.body.style.overflow = "hidden";
+      window.scrollTo(0, 0);
+    } else {
+      document.body.style.overflow = "visible";
+
+    }
+
+  }, [modalBoolean]);
   // console.log(imagesApi);
 
   const handleBackImage = (index: number) => {
@@ -78,9 +89,14 @@ export default function Main() {
     }
   };
 
-
   return (
     <>
+      <Head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
+      </Head>
       <div className="max-w-[1170px] min-h-[100vh] m-auto pt-[30px] mb-10">
         {modalBoolean && (
           <>
@@ -114,8 +130,8 @@ export default function Main() {
                   if (index === 1) {
                     return (
                       <motion.img
-                        whileTap={{scale: 1.5}}
-                        whileHover={{scale:2}}
+                        whileTap={{ scale: 1.5 }}
+                        whileHover={{ scale: 2 }}
                         className={styleImage}
                         key={index}
                         src={imagesApi[value]}

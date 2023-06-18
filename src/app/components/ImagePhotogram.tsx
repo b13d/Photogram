@@ -12,6 +12,7 @@ export interface ImageProps {
   imagesApi: string[];
 }
 
+
 export default function ImagePhoto({
   currentFile,
   setModalBoolean,

@@ -65,9 +65,7 @@ export default function Main() {
       window.scrollTo(0, 0);
     } else {
       document.body.style.overflow = "visible";
-
     }
-
   }, [modalBoolean]);
   // console.log(imagesApi);
 
@@ -104,19 +102,8 @@ export default function Main() {
               onClick={() => handleCloseModal()}
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
-            <div className="fixed justify-center sm:w-[1300px] items-center z-50 left-0 right-0  m-auto max-sm:top-[50%] top-[30%]">
-              <div className="flex items-center m-auto justify-between">
-                {currentIndex !== undefined ? (
-                  <span
-                    onClick={() => handleBackImage(currentIndex[1])}
-                    className="cursor-pointer   text-[#ffd392]  text-[70px]"
-                  >
-                    &#60;
-                  </span>
-                ) : (
-                  ""
-                )}
-
+            <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[50%] bottom-0 top-[30%]">
+              <div className="flex items-center m-auto justify-around">
                 {currentIndex?.map((value, index) => {
                   let styleImage = "";
 
@@ -149,17 +136,27 @@ export default function Main() {
                     );
                   }
                 })}
-                {currentIndex !== undefined ? (
-                  <span
-                    onClick={() => handleNextImage(currentIndex[1])}
-                    className="cursor-pointer text-[#ffd392]  text-[70px]"
-                  >
-                    &#62;
-                  </span>
-                ) : (
-                  ""
-                )}
               </div>
+              {currentIndex !== undefined ? (
+                <span
+                  onClick={() => handleBackImage(currentIndex[1])}
+                  className="cursor-pointer absolute left-0 max-sm:left-[-10px] top-0  sm:top-[80px]   text-[#ffd392]  text-[70px]"
+                >
+                  &#60;
+                </span>
+              ) : (
+                ""
+              )}
+              {currentIndex !== undefined ? (
+                <span
+                  onClick={() => handleNextImage(currentIndex[1])}
+                  className="absolute top-0 sm:top-[80px] right-0  max-sm:right-[-10px]  cursor-pointer text-[#ffd392]  text-[70px]"
+                >
+                  &#62;
+                </span>
+              ) : (
+                ""
+              )}
             </div>
           </>
         )}

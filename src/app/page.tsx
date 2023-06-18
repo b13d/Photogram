@@ -89,7 +89,7 @@ export default function Main() {
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
             <div className="fixed justify-center sm:w-[1300px] items-center z-50 left-0 right-0  m-auto max-sm:top-[50%] top-[30%]">
-              <div className="flex items-center m-auto justify-around">
+              <div className="flex items-center m-auto justify-between">
                 {currentIndex !== undefined ? (
                   <span
                     onClick={() => handleBackImage(currentIndex[1])}

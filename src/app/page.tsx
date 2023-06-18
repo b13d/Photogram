@@ -58,7 +58,7 @@ export default function Main() {
     },
   };
 
-  console.log(imagesApi);
+  // console.log(imagesApi);
 
   const handleBackImage = (index: number) => {
     if (index === 0) {
@@ -78,6 +78,7 @@ export default function Main() {
     }
   };
 
+
   return (
     <>
       <div className="max-w-[1170px] min-h-[100vh] m-auto pt-[30px] mb-10">
@@ -88,11 +89,11 @@ export default function Main() {
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
             <div className="fixed justify-center sm:w-[1300px] items-center z-50 left-0 right-0  m-auto top-[30%]">
-              <div className="flex items-center m-auto  justify-between">
+              <div className="flex items-center m-auto justify-between">
                 {currentIndex !== undefined ? (
                   <span
                     onClick={() => handleBackImage(currentIndex[1])}
-                    className="cursor-pointer text-[#ffd392]  text-[70px]"
+                    className="cursor-pointer  text-[#ffd392]  text-[70px]"
                   >
                     &#60;
                   </span>
@@ -104,17 +105,17 @@ export default function Main() {
                   let styleImage = "";
 
                   if (index === 1) {
-                    styleImage = "max-w-[800px] h-[300px]";
-                  } else styleImage = "max-w-[300px] h-[150px] brightness-50";
+                    styleImage =
+                      "z-10 max-sm:w-[200px] max-sm:h-auto max-w-[800px] h-[300px]";
+                  } else
+                    styleImage =
+                      "max-sm:hidden max-w-[300px] h-[150px] brightness-50";
+
                   if (index === 1) {
                     return (
                       <motion.img
-                        drag="x"
-                        dragTransition={{
-                          min: -100,
-                          max: 100,
-                          bounceDamping: 8,
-                        }}
+                        whileTap={{scale: 1.5}}
+                        whileHover={{scale:2}}
                         className={styleImage}
                         key={index}
                         src={imagesApi[value]}

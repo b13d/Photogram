@@ -91,15 +91,7 @@ export default function Main() {
     }
   };
 
-  function Context() {
-    window.oncontextmenu = function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    };
 
-    console.log("Нажал")
-  }
 
 
   return (
@@ -133,7 +125,6 @@ export default function Main() {
                   if (index === 1) {
                     return (
                       <motion.img
-                        onTap={Context}
                         whileTap={{ scale: 1.5 }}
                         whileHover={{ scale: 2 }}
                         className={styleImage}

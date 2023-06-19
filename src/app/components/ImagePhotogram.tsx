@@ -27,6 +27,8 @@ export default function ImagePhoto({
   }, [imagesApi, currentFile]);
 
   const handleWatchImage = (index: number) => {
+    Context()
+
     let tempIndex: number[] = [];
 
     if (setCurrentIndex !== undefined && setModalBoolean !== undefined) {
@@ -41,6 +43,14 @@ export default function ImagePhoto({
       setModalBoolean(true);
     }
   };
+
+  function Context() {
+    window.oncontextmenu = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+  }
 
   const variants = {
     initial: {

@@ -150,7 +150,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleBackImage(currentIndex[1])}
-                  className="cursor-pointer absolute left-0 sm:left-[100px] max-sm:left-[10px] top-0  sm:top-[80px]   text-[#ffd392]  text-[70px]"
+                  className="cursor-pointer absolute left-0 sm:left-[100px]  top-0  sm:top-[80px]   text-[#ffd392] max-sm:text-[50px]  text-[70px]"
                 >
                   &#60;
                 </span>
@@ -160,7 +160,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleNextImage(currentIndex[1])}
-                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px]  max-sm:right-[10px]  cursor-pointer text-[#ffd392]  text-[70px]"
+                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px]    cursor-pointer text-[#ffd392] max-sm:text-[50px] text-[70px]"
                 >
                   &#62;
                 </span>

@@ -17,3 +17,7 @@ body {
   transition: 1s;
   cursor: pointer;
 }
+
+.modal-grid {
+  grid-template-columns: .5fr 0.1fr .5fr;
+}

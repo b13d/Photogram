@@ -46,6 +46,10 @@ export default function Main() {
   }, [currentFile, linkUseFirestore]);
 
   const handleCloseModal = () => {
+    window.oncontextmenu = function (event) {
+      return true;
+    };
+
     setModalBoolean(false);
     setModalImage(undefined);
   };
@@ -87,6 +91,17 @@ export default function Main() {
     }
   };
 
+  function Context() {
+    window.oncontextmenu = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+
+    console.log("Нажал")
+  }
+
+
   return (
     <>
       <Head>
@@ -102,8 +117,9 @@ export default function Main() {
               onClick={() => handleCloseModal()}
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
-            <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[50%] bottom-0 top-[30%]">
-              <div className="flex items-center m-auto justify-around">
+            <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[200px] bottom-0 top-[30%]">
+              {/* <div className="flex items-center m-auto justify-around"> */}
+              <div className="modal-grid sm:grid items-center m-auto justify-around">
                 {currentIndex?.map((value, index) => {
                   let styleImage = "";
 
@@ -117,12 +133,15 @@ export default function Main() {
                   if (index === 1) {
                     return (
                       <motion.img
+                        onTap={Context}
                         whileTap={{ scale: 1.5 }}
                         whileHover={{ scale: 2 }}
                         className={styleImage}
                         key={index}
+                        variants={variants}
                         src={imagesApi[value]}
                         alt="show-image"
+                        style={{ justifySelf: "center", margin: "auto" }}
                       />
                     );
                   } else {
@@ -132,6 +151,7 @@ export default function Main() {
                         key={index}
                         src={imagesApi[value]}
                         alt="show-image"
+                        style={{ justifySelf: "center" }}
                       />
                     );
                   }
@@ -140,7 +160,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleBackImage(currentIndex[1])}
-                  className="cursor-pointer absolute left-0 max-sm:left-[-10px] top-0  sm:top-[80px]   text-[#ffd392]  text-[70px]"
+                  className="cursor-pointer absolute left-0 sm:left-[100px] max-sm:left-[20px] top-0  sm:top-[80px]   text-[#ffd392]  text-[70px]"
                 >
                   &#60;
                 </span>
@@ -150,7 +170,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleNextImage(currentIndex[1])}
-                  className="absolute top-0 sm:top-[80px] right-0  max-sm:right-[-10px]  cursor-pointer text-[#ffd392]  text-[70px]"
+                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px]  max-sm:right-[20px]  cursor-pointer text-[#ffd392]  text-[70px]"
                 >
                   &#62;
                 </span>

@@ -12,8 +12,9 @@ import { useFirestore as UseFirestore } from "@/hooks/useFirestore";
 import { motion } from "framer-motion";
 import Footer from "./components/Footer";
 import Head from "next/head";
-import { doc, deleteDoc, deleteField } from "firebase/firestore";
+import { doc, deleteDoc, deleteField, updateDoc } from "firebase/firestore";
 import ConfigFirebase from "@/firebase/ConfigFirebase";
+import { deleteObject, ref } from "firebase/storage";
 
 // export const ApiContext: React.Context<string[]> = createContext<string[]>([]);
 
@@ -31,6 +32,7 @@ export default function Main() {
   const [currentIndex, setCurrentIndex] = useState<number[]>();
   const [inZoom, setInZoom] = useState<boolean>(false);
   const [currentScale, setCurrentScale] = useState<number>(1);
+  const [lastID, setLastID] = useState<string>("");
 
   let refInput = useRef<HTMLInputElement>(null);
 
@@ -58,7 +60,7 @@ export default function Main() {
         q = refInput.current;
       }
 
-      linkStorage(setCurrentFile, setProgress, element);
+      linkStorage(setCurrentFile, setProgress, element, setLastID);
       linkUseFirestore(currentFile, setImages);
 
       // очищаю input
@@ -69,28 +71,68 @@ export default function Main() {
   useEffect(() => {
     // проверка изображения на размеры
 
-    async function CheckImage() {
-      const images = doc(db, "images");
+    function CheckImage() {
+      const imagesRef = doc(db, "images", "url");
       console.log(currentFile);
-  
+
       // let image = new Image();
-  
+
       const img = new Image();
-      img.onload = function () {
-        alert(img.width + "x" + img.height);
+      img.onload = async function () {
+        if (lastID !== "" && lastID.length > 5 && img.complete) {
+          const desertRef = ref(storage, currentFile);
+
+          if (
+            img.width < 500 ||
+            img.height < 500 ||
+            img.width > 2000 ||
+            img.height > 2000
+          ) {
+            deleteObject(desertRef)
+              .then(() => {})
+              .catch((error) => {
+                console.log("Ошибка такого файла не существует!!!");
+              });
+
+            await deleteDoc(doc(db, "images", lastID));
+
+            if (img.width < 500 || img.height < 500) {
+              alert(
+                "Маленький размер - " +
+                  " width:" +
+                  img.width +
+                  " height" +
+                  img.height
+              );
+            } else {
+              alert(
+                "Слишком большой размер изображения - " +
+                  " width:" +
+                  img.width +
+                  " height" +
+                  img.height
+              );
+            }
+          } else {
+            alert("Картинка хорошего размера!");
+          }
+          setCurrentFile("");
+          setLastID("");
+        }
       };
-  
+
       img.src = currentFile;
+
+      console.log(lastID);
     }
 
-    CheckImage()
+    CheckImage();
 
     // console.log(image);
-    
 
     // console.log("width: " + image.width);
     // console.log("height: " + image.height);
-  }, [currentFile]);
+  }, [currentFile, lastID]);
 
   useEffect(() => {
     linkUseFirestore(currentFile, setImages);

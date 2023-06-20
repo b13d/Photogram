@@ -6,7 +6,8 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 export function useStorage(
   setCurrentFile: React.Dispatch<React.SetStateAction<string>>,
   setProgress: React.Dispatch<React.SetStateAction<number>>,
-  element: React.FormEvent<HTMLInputElement>
+  element: React.FormEvent<HTMLInputElement>,
+  setLastID: React.Dispatch<React.SetStateAction<string>>
 ) {
   const { db, storage } = ConfigFirebase();
 
@@ -43,6 +44,7 @@ export function useStorage(
               url: downloadURL,
             });
 
+            setLastID(docRef.id);
             // console.log(docRef.id);
           } catch (error) {
             console.log(error);

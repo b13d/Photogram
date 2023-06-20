@@ -45,11 +45,11 @@ export default function ImagePhoto({
   };
 
   function Context() {
-    window.oncontextmenu = function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      return false;
-    };
+    // window.oncontextmenu = function (event) {
+    //   event.preventDefault();
+    //   event.stopPropagation();
+    //   return false;
+    // };
   }
 
   const variants = {
@@ -72,7 +72,7 @@ export default function ImagePhoto({
             whileHover={{ opacity: 1 }}
             onClick={(e) => handleWatchImage(index)}
             style={{ height: 300 }}
-            className="cursor-pointer z-[0] object-cover"
+            className="rounded-md shadow-md cursor-pointer z-[0] object-cover"
             key={index}
             width={300}
             height={300}

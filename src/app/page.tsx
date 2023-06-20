@@ -74,25 +74,40 @@ export default function Main() {
   // console.log(imagesApi);
 
   const handleBackImage = (index: number) => {
+    // if (index === 0) {
+    //   setCurrentIndex([imagesApi.length - 2, imagesApi.length - 1, index]);
+    // } else if (index === imagesApi.length - 1) {
+    //   setCurrentIndex([imagesApi.length - 3, imagesApi.length - 2, index]);
+    // } else {
+    //   setCurrentIndex([index - 2, index - 1, index]);
+    // }
+
     if (index === 0) {
       setCurrentIndex([imagesApi.length - 2, imagesApi.length - 1, index]);
-    } else if (index === imagesApi.length - 1) {
-      setCurrentIndex([imagesApi.length - 3, imagesApi.length - 2, index]);
     } else {
-      setCurrentIndex([index - 2, index - 1, index]);
+      setCurrentIndex([index - 2 < 0 ? imagesApi.length - 1 : index - 2, index - 1, index]);
     }
   };
 
   const handleNextImage = (index: number) => {
     if (index === imagesApi.length - 1) {
-      setCurrentIndex([index, 0, index + 1]);
+      setCurrentIndex([index, 0, 1]);
     } else {
-      setCurrentIndex([index, index + 1, index + 2]);
+      setCurrentIndex([
+        index,
+        index + 1,
+        index + 2 < imagesApi.length ? index + 2 : 0,
+      ]);
     }
   };
 
+  const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    let temp = e.target as HTMLElement;
 
-
+    if (temp.tagName === "DIV") {
+      handleCloseModal();
+    }
+  };
 
   return (
     <>
@@ -102,7 +117,7 @@ export default function Main() {
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
       </Head>
-      <div className="max-w-[1170px] min-h-[100vh] m-auto pt-[30px] mb-10">
+      <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
         {modalBoolean && (
           <>
             <div
@@ -110,7 +125,10 @@ export default function Main() {
               className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
             <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[200px] bottom-0 top-[30%]">
-              <div className="modal-grid sm:grid items-center m-auto justify-around">
+              <div
+                onClick={(e) => handleClick(e)}
+                className="modal-grid justify-center gap-4 sm:grid items-center m-auto "
+              >
                 {currentIndex?.map((value, index) => {
                   let styleImage = "";
 
@@ -131,7 +149,12 @@ export default function Main() {
                         variants={variants}
                         src={imagesApi[value]}
                         alt="show-image"
-                        style={{ justifySelf: "center", margin: "auto", zIndex: 10, position: "relative" }}
+                        style={{
+                          justifySelf: "center",
+                          margin: "auto",
+                          zIndex: 10,
+                          position: "relative",
+                        }}
                       />
                     );
                   } else {
@@ -141,7 +164,7 @@ export default function Main() {
                         key={index}
                         src={imagesApi[value]}
                         alt="show-image"
-                        style={{ justifySelf: "center" }}
+                        style={{ justifySelf: "center", zIndex: -1 }}
                       />
                     );
                   }
@@ -170,7 +193,9 @@ export default function Main() {
             </div>
           </>
         )}
-        <h1 className="text-2xl text-[#ffc66e] pb-[10px]">Photogram</h1>
+        <h1 className="text-[30px] text-[#ffc66e] pb-[10px] text-center">
+          Photogram
+        </h1>
         <div className="flex flex-col items-center align-middle h-min justify-center gap-2 ">
           <p className="text-5xl text-[#7d7d7d] font-medium">Your pictures: </p>
           <h1 className="text-1xl">

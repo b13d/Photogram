@@ -27,6 +27,8 @@ export default function Main() {
   const linkUseFirestore = UseFirestore;
   const [imagesApi, setImages] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState<number[]>();
+  const [inZoom, setInZoom] = useState<boolean>(false);
+  const [currentScale, setCurrentScale] = useState<number>(1);
 
   const changeHangle = (element: React.FormEvent<HTMLInputElement>) => {
     if (
@@ -46,6 +48,9 @@ export default function Main() {
   }, [currentFile, linkUseFirestore]);
 
   const handleCloseModal = () => {
+    setCurrentScale(1);
+    setInZoom(false);
+
     window.oncontextmenu = function (event) {
       return true;
     };
@@ -85,7 +90,11 @@ export default function Main() {
     if (index === 0) {
       setCurrentIndex([imagesApi.length - 2, imagesApi.length - 1, index]);
     } else {
-      setCurrentIndex([index - 2 < 0 ? imagesApi.length - 1 : index - 2, index - 1, index]);
+      setCurrentIndex([
+        index - 2 < 0 ? imagesApi.length - 1 : index - 2,
+        index - 1,
+        index,
+      ]);
     }
   };
 
@@ -106,6 +115,17 @@ export default function Main() {
 
     if (temp.tagName === "DIV") {
       handleCloseModal();
+    }
+  };
+
+  const handleTap = () => {
+    console.log("Tap");
+    if (inZoom) {
+      setCurrentScale(1);
+      setInZoom(false);
+    } else {
+      setCurrentScale(1.5);
+      setInZoom(true);
     }
   };
 
@@ -134,7 +154,7 @@ export default function Main() {
 
                   if (index === 1) {
                     styleImage =
-                      "z-10 max-sm:w-[200px] max-sm:scale-125  max-sm:max-h-[300px] max-w-[700px] sm:h-[300px]";
+                      "z-10 max-sm:w-[200px] max-sm:scale-125 sm: max-sm:max-h-[300px] max-w-[700px] sm:h-[300px]";
                   } else
                     styleImage =
                       "max-sm:hidden max-w-[300px] h-[150px] brightness-50";
@@ -142,14 +162,15 @@ export default function Main() {
                   if (index === 1) {
                     return (
                       <motion.img
-                        whileTap={{ scale: 1.5 }}
-                        whileHover={{ scale: 2 }}
+                        onTap={handleTap}
                         className={styleImage}
                         key={index}
                         variants={variants}
                         src={imagesApi[value]}
                         alt="show-image"
                         style={{
+                          transitionDuration: "300ms",
+                          scale: currentScale,
                           justifySelf: "center",
                           margin: "auto",
                           zIndex: 10,
@@ -173,7 +194,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleBackImage(currentIndex[1])}
-                  className="cursor-pointer absolute left-0 sm:left-[100px]  top-0  sm:top-[80px]   text-[#ffd392] max-sm:text-[50px]  text-[70px]"
+                  className="cursor-pointer absolute left-0 sm:left-[100px]  top-0 z-20  sm:top-[80px]   text-[#ffd392] max-sm:text-[50px]  text-[70px]"
                 >
                   &#60;
                 </span>
@@ -183,7 +204,7 @@ export default function Main() {
               {currentIndex !== undefined ? (
                 <span
                   onClick={() => handleNextImage(currentIndex[1])}
-                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px]    cursor-pointer text-[#ffd392] max-sm:text-[50px] text-[70px]"
+                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px] z-20   cursor-pointer text-[#ffd392] max-sm:text-[50px] text-[70px]"
                 >
                   &#62;
                 </span>

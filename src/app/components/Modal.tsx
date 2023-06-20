@@ -24,6 +24,8 @@ export default function Modal({
 
   const imagesRef = ref(storage, url);
 
+  debugger
+
   const img = new Image();
   img.src = url !== undefined ? url : "";
 

@@ -4,14 +4,16 @@ export interface IAPI {
   imagesApi: string[];
 }
 
-import Image from "next/image";
-import React, { useEffect, useState, createContext } from "react";
+// import Image from "next/image";
+import React, { useEffect, useState, createContext, useRef } from "react";
 import ImagePhoto from "./components/ImagePhotogram";
 import { useStorage } from "@/hooks/useStorage";
 import { useFirestore as UseFirestore } from "@/hooks/useFirestore";
 import { motion } from "framer-motion";
 import Footer from "./components/Footer";
 import Head from "next/head";
+import { doc, deleteDoc, deleteField } from "firebase/firestore";
+import ConfigFirebase from "@/firebase/ConfigFirebase";
 
 // export const ApiContext: React.Context<string[]> = createContext<string[]>([]);
 
@@ -30,18 +32,65 @@ export default function Main() {
   const [inZoom, setInZoom] = useState<boolean>(false);
   const [currentScale, setCurrentScale] = useState<number>(1);
 
+  let refInput = useRef<HTMLInputElement>(null);
+
+  const { db, storage } = ConfigFirebase();
+
   const changeHangle = (element: React.FormEvent<HTMLInputElement>) => {
     if (
       element.currentTarget.files &&
       element.currentTarget.files[0] !== undefined &&
       types.includes(element.currentTarget.files[0].type)
     ) {
-      // console.log(element)
+      // debugger;
+
+      // let url = element.currentTarget.value;
+
+      // const img = new Image();
+      // img.onload = function () {
+      //   alert(img.width + "x" + img.height);
+      // };
+
+      // console.log(image.width);
+
+      let q: HTMLInputElement | undefined = undefined;
+      if (refInput.current !== null) {
+        q = refInput.current;
+      }
 
       linkStorage(setCurrentFile, setProgress, element);
       linkUseFirestore(currentFile, setImages);
+
+      // очищаю input
+      q !== undefined ? (q.value = "") : "";
     }
   };
+
+  useEffect(() => {
+    // проверка изображения на размеры
+
+    async function CheckImage() {
+      const images = doc(db, "images");
+      console.log(currentFile);
+  
+      // let image = new Image();
+  
+      const img = new Image();
+      img.onload = function () {
+        alert(img.width + "x" + img.height);
+      };
+  
+      img.src = currentFile;
+    }
+
+    CheckImage()
+
+    // console.log(image);
+    
+
+    // console.log("width: " + image.width);
+    // console.log("height: " + image.height);
+  }, [currentFile]);
 
   useEffect(() => {
     linkUseFirestore(currentFile, setImages);
@@ -142,7 +191,7 @@ export default function Main() {
           <>
             <div
               onClick={() => handleCloseModal()}
-              className="bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
+              className="backdrop-blur-sm bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
             ></div>
             <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[200px] bottom-0 top-[30%]">
               <div
@@ -223,6 +272,8 @@ export default function Main() {
             Lorem, ipsum dolor sit amet consectetur adipisicing elit.
           </h1>
           <input
+            accept=".jpg, .png, .jpeg"
+            ref={refInput}
             hidden
             type="file"
             name="image-download"
@@ -231,7 +282,7 @@ export default function Main() {
             // value={currentFile}
           />
           <label htmlFor="image-download">
-            <Image
+            <img
               src="/images/icon-add.png"
               width={45}
               height={45}

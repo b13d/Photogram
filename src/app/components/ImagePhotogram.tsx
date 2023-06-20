@@ -61,6 +61,7 @@ export default function ImagePhoto({
 
   return (
     <div className="grid min-[400px]:auto-cols-auto min-[800px]:grid-cols-3 gap-8">
+      <img src="" className="test-img" hidden alt="" />
       {images.map((value, index) => {
         return (
           <motion.img

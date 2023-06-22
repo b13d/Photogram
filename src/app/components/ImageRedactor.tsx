@@ -46,6 +46,8 @@ export default function ImageRedactor(props: IProps) {
     const ctx = canvas.getContext("2d");
     const image = document.getElementById("source") as HTMLImageElement;
 
+    image.crossOrigin = "anonymous";
+
     if (image !== null) {
       image.onload = function () {
         // debugger;
@@ -68,7 +70,7 @@ export default function ImageRedactor(props: IProps) {
         console.log(areaImg);
         console.log(canvas);
 
-        debugger
+        debugger;
 
         var dataURL = canvas.toDataURL("image/png");
 
@@ -273,7 +275,10 @@ export default function ImageRedactor(props: IProps) {
           </>
         )}
         {/* <canvas id="canvas" className=""></canvas> */}
-        <motion.div ref={constraintsRef} className={` bg-[#000000b5] relative `}>
+        <motion.div
+          ref={constraintsRef}
+          className={` bg-[#000000b5] relative `}
+        >
           {/* <motion.div style={{ width, height, x, y }} className="absolute">
             <motion.div
               onMouseDownCapture={(e) => handleMove(e)}

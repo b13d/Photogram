@@ -39,13 +39,38 @@ export default function Main() {
 
   const { db, storage } = ConfigFirebase();
 
-  const changeHangle = (element: React.FormEvent<HTMLInputElement>) => {
+  const changeHangle = (element: React.ChangeEvent<HTMLInputElement>) => {
     if (
       element.currentTarget.files &&
       element.currentTarget.files[0] !== undefined &&
       types.includes(element.currentTarget.files[0].type)
     ) {
       // debugger;
+
+      console.log(refInput);
+      console.log(refInput.current);
+
+      let url: string = "";
+      let name = element.currentTarget.files[0].name;
+
+      var fileReader = new FileReader();
+      fileReader.onload = function () {
+        url = fileReader.result !== null ? fileReader.result.toString() : "";
+
+        fetch(url)
+          .then((res) => res.blob())
+          .then((blob) => {
+            const file = new File(
+              [blob],
+              name !== null ? name : "random-name.png",
+              blob
+            );
+            console.log(file);
+          });
+        // }
+
+        setCurrentFile(url);
+      };
 
       // let url = element.currentTarget.value;
 
@@ -62,9 +87,10 @@ export default function Main() {
       }
 
       console.log(element.currentTarget.files[0]);
+      fileReader.readAsDataURL(element.currentTarget.files[0]);
 
-      linkStorage(setCurrentFile, setProgress, element, setLastID);
-      linkUseFirestore(currentFile, setImages);
+      // linkStorage(setCurrentFile, setProgress, element, setLastID);
+      // linkUseFirestore(currentFile, setImages);
 
       // очищаю input
       temp !== undefined ? (temp.value = "") : "";

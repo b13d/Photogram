@@ -22,6 +22,8 @@ export default function ImageRedactor() {
     top: 0,
     left: 0,
   });
+  const [showResult, setShowResult] = useState(false);
+  const [newUrlImg, setNewUrlImg] = useState<string>("");
 
   const { scrollY } = useScroll();
 
@@ -42,6 +44,8 @@ export default function ImageRedactor() {
 
     if (image !== null) {
       image.onload = function () {
+        // debugger;
+
         ctx?.drawImage(
           image,
           areaImg.left,
@@ -50,11 +54,20 @@ export default function ImageRedactor() {
           areaImg.height,
           0,
           0,
-          canvas.width,
-          canvas.height
+          canvas.clientWidth,
+          canvas.clientHeight
         );
 
+        // canvas.width = canvas.clientWidth;
+        // canvas.height = canvas.clientHeight;
+
+        console.log(areaImg);
+        console.log(canvas);
+
         var dataURL = canvas.toDataURL("image/png");
+
+        setShowResult(true);
+        setNewUrlImg(dataURL);
 
         console.log(dataURL);
       };
@@ -89,6 +102,8 @@ export default function ImageRedactor() {
       width: areaImg.width,
       top: areaImg.top,
       left: areaImg.left,
+      // top: areaImg.top,
+      // left: areaImg.left,
     };
 
     if (refCurrentImg.current !== null) {
@@ -102,27 +117,37 @@ export default function ImageRedactor() {
             if (tempImg.height >= Number(element.target.value)) {
               height.set(Number(element.target.value));
 
+              if (sizeImg !== undefined) {
+                areaImg.top + Number(element.target.value) > sizeImg?.height
+                  ? y.set(0)
+                  : y;
+              }
+
               let tempAreaImg: IAreaImg = {
                 height: Number(element.target.value),
                 width: width.getPrevious(),
-                top: areaImg.height,
-                left: areaImg.height,
+                top: areaImg.top,
+                left: areaImg.left,
               };
 
               return setAreaImg(tempAreaImg);
             }
             break;
           case 1:
-            console.log("Зашел в кейс width");
-
             if (tempImg.width >= Number(element.target.value)) {
               width.set(Number(element.target.value));
+
+              if (sizeImg !== undefined) {
+                areaImg.left + Number(element.target.value) > sizeImg?.width
+                  ? x.set(0)
+                  : x;
+              }
 
               let tempAreaImg: IAreaImg = {
                 height: height.getPrevious(),
                 width: Number(element.target.value),
-                top: areaImg.height,
-                left: areaImg.height,
+                top: areaImg.top,
+                left: areaImg.left,
               };
 
               return setAreaImg(tempAreaImg);
@@ -173,19 +198,102 @@ export default function ImageRedactor() {
     ChangeSizeImage();
   };
 
+  // const handleResizeCanvas = (name: string) => {
+  //   console.log(name);
+  // };
+
+  // const handleMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+  //   console.log(e.clientX);
+
+  //   let tempDiv = e.target as HTMLDivElement;
+
+  //   tempDiv.style.left = "1px";
+  // };
+
+  console.log(areaImg);
+
+  const handleCloseModal = () => {
+    setShowResult(false);
+
+    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+
+    const context = canvas.getContext("2d");
+    context?.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
   return (
     <>
       <div className="flex m-auto relative items-start justify-around">
+        {showResult && (
+          <>
+            <div
+              onClick={() => handleCloseModal()}
+              className="w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[100]"
+            ></div>
+            <motion.div
+              // style={{ width, height }}
+              className="rounded-lg mt-10 z-[150] m-auto  fixed"
+            >
+              <motion.img
+                style={{
+                  width:
+                    areaImg.width > 300 ? areaImg.width / 2 : areaImg.width,
+                  height:
+                    areaImg.height > 300 ? areaImg.height / 2 : areaImg.height,
+                }}
+                className="rounded-md m-auto"
+                src={newUrlImg}
+                alt=""
+              />
+              <div className="items-center text-center mt-10 p-5 flex flex-col gap-4 justify-center h-[150px] rounded-b-md z-[150] bg-[#2b2b2bbe]">
+                <h1 className="text-white">
+                  Желаете ли вы сохранить данное изображение?
+                </h1>
+
+                <div className="flex gap-3">
+                  <button className="bg-[#2f5239] font-semibold py-1 px-3 hover:bg-[#3e9256] duration-200">
+                    Yes
+                  </button>
+                  <button className="bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200">
+                    No
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
         {/* <canvas id="canvas" className=""></canvas> */}
         <div ref={constraintsRef} className={` bg-[#000000b5] relative `}>
+          {/* <motion.div style={{ width, height, x, y }} className="absolute">
+            <motion.div
+              onMouseDownCapture={(e) => handleMove(e)}
+              style={{ height, width: "2px" }}
+              className=" absolute cursor-pointer left-[-5px] border-2  border-red-600"
+              onClick={() => handleResizeCanvas("left")}
+            ></motion.div>
+            <motion.div
+              className="absolute cursor-pointer  right-[-5px] border-2 border-red-600"
+              style={{ height, width: "2px" }}
+              onClick={() => handleResizeCanvas("right")}
+            ></motion.div>
+            <motion.div
+              style={{ width, height: "2px" }}
+              className="absolute cursor-pointer top-[-5px] border-2 border-red-600"
+              onClick={() => handleResizeCanvas("top")}
+            ></motion.div>
+            <motion.div
+              style={{ width, height: "2px" }}
+              className="absolute cursor-pointer bottom-[-5px] border-2 border-red-600"
+              onClick={() => handleResizeCanvas("bottom")}
+            ></motion.div>
+          </motion.div> */}
+
           <motion.canvas
-          width={width.getPrevious()}
-          height={height.getPrevious()}
+            width={areaImg.width}
+            height={areaImg.height}
             id="canvas"
-            // onChange={(e) => handleChangeDiv(e)}
             drag
             onTap={(e) => handleChangeDiv()}
-            // onTapStart={(e) => handleChangeDiv(e)}
             onTapCancel={(e) => handleChangeDiv()}
             dragMomentum={false}
             dragSnapToOrigin={false}
@@ -223,7 +331,7 @@ export default function ImageRedactor() {
               className="border-2 px-4 py-2 shadow-md border-none rounded-md"
               type="number"
               // value={height.getPrevious()}
-              value={areaImg.height}
+              value={areaImg.height.toString().replace(/^0+/, "")}
               onChange={(e) => handleChange(0, e)}
             />
           </div>
@@ -238,7 +346,7 @@ export default function ImageRedactor() {
               className="border-2 px-4 py-2 border-none shadow-md rounded-md"
               type="number"
               // value={width.getPrevious()}
-              value={areaImg.width}
+              value={areaImg.width.toString().replace(/^0+/, "")}
               onChange={(e) => handleChange(1, e)}
             />
           </div>

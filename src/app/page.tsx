@@ -15,6 +15,7 @@ import Head from "next/head";
 import { doc, deleteDoc, deleteField, updateDoc } from "firebase/firestore";
 import ConfigFirebase from "@/firebase/ConfigFirebase";
 import { deleteObject, ref } from "firebase/storage";
+import ImageRedactor from "./components/ImageRedactor";
 
 // export const ApiContext: React.Context<string[]> = createContext<string[]>([]);
 
@@ -227,7 +228,9 @@ export default function Main() {
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
         />
+        <link rel="stylesheet" href="croppie.css" />
       </Head>
+      <ImageRedactor />
       <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
         {modalBoolean && (
           <>

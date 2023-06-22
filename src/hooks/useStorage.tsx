@@ -14,8 +14,10 @@ export function useStorage(
   const storageRef = ref(storage, `images/${uuidv4()}`);
 
   if (element.currentTarget.files) {
+    
     const file = element.currentTarget.files[0];
     const uploadTask = uploadBytesResumable(storageRef, file);
+
 
     uploadTask.on(
       "state_changed",

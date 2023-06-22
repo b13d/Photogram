@@ -56,16 +56,18 @@ export default function Main() {
 
       // console.log(image.width);
 
-      let q: HTMLInputElement | undefined = undefined;
+      let temp: HTMLInputElement | undefined = undefined;
       if (refInput.current !== null) {
-        q = refInput.current;
+        temp = refInput.current;
       }
+
+      console.log(element.currentTarget.files[0]);
 
       linkStorage(setCurrentFile, setProgress, element, setLastID);
       linkUseFirestore(currentFile, setImages);
 
       // очищаю input
-      q !== undefined ? (q.value = "") : "";
+      temp !== undefined ? (temp.value = "") : "";
     }
   };
 
@@ -117,8 +119,8 @@ export default function Main() {
           } else {
             alert("Картинка хорошего размера!");
           }
-          setCurrentFile("");
-          setLastID("");
+          // setCurrentFile("");
+          // setLastID("");
         }
       };
 
@@ -221,6 +223,15 @@ export default function Main() {
     }
   };
 
+  const handleCloseModalRedactor = () => {
+    // setShowResult(false);
+
+    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+
+    const context = canvas.getContext("2d");
+    context?.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
   return (
     <>
       <Head>
@@ -230,125 +241,137 @@ export default function Main() {
         />
         <link rel="stylesheet" href="croppie.css" />
       </Head>
-      <ImageRedactor />
-      <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
-        {modalBoolean && (
-          <>
-            <div
-              onClick={() => handleCloseModal()}
-              className="backdrop-blur-sm bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
-            ></div>
-            <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[200px] bottom-0 top-[30%]">
+      {currentFile.length > 5 && (
+        <>
+          <div
+            onClick={() => handleCloseModalRedactor()}
+            className="w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[5]"
+          ></div>
+          <ImageRedactor imageUrl={currentFile} />
+        </>
+      )}
+      {currentFile.length === 0 && (
+        <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
+          {modalBoolean && (
+            <>
               <div
-                onClick={(e) => handleClick(e)}
-                className="modal-grid justify-center gap-4 sm:grid items-center m-auto "
-              >
-                {currentIndex?.map((value, index) => {
-                  let styleImage = "";
+                onClick={() => handleCloseModal()}
+                className="backdrop-blur-sm bg-[#272727ec] z-[1] fixed h-full w-full inset-x-0 inset-y-0"
+              ></div>
+              <div className="fixed justify-center sm:w-auto items-center z-50 left-0 right-0  m-auto max-sm:top-[200px] bottom-0 top-[30%]">
+                <div
+                  onClick={(e) => handleClick(e)}
+                  className="modal-grid justify-center gap-4 sm:grid items-center m-auto "
+                >
+                  {currentIndex?.map((value, index) => {
+                    let styleImage = "";
 
-                  if (index === 1) {
-                    styleImage =
-                      "z-10 max-sm:w-[200px] max-sm:scale-125 sm: max-sm:max-h-[300px] max-w-[700px] sm:h-[300px]";
-                  } else
-                    styleImage =
-                      "max-sm:hidden max-w-[300px] h-[150px] brightness-50";
+                    if (index === 1) {
+                      styleImage =
+                        "z-10 max-sm:w-[200px] max-sm:scale-125 sm: max-sm:max-h-[300px] max-w-[700px] sm:h-[300px]";
+                    } else
+                      styleImage =
+                        "max-sm:hidden max-w-[300px] h-[150px] brightness-50";
 
-                  if (index === 1) {
-                    return (
-                      <motion.img
-                        onTap={handleTap}
-                        className={styleImage}
-                        key={index}
-                        variants={variants}
-                        src={imagesApi[value]}
-                        alt="show-image"
-                        style={{
-                          transitionDuration: "300ms",
-                          scale: currentScale,
-                          justifySelf: "center",
-                          margin: "auto",
-                          zIndex: 10,
-                          position: "relative",
-                        }}
-                      />
-                    );
-                  } else {
-                    return (
-                      <motion.img
-                        className={styleImage}
-                        key={index}
-                        src={imagesApi[value]}
-                        alt="show-image"
-                        style={{ justifySelf: "center", zIndex: -1 }}
-                      />
-                    );
-                  }
-                })}
+                    if (index === 1) {
+                      return (
+                        <motion.img
+                          onTap={handleTap}
+                          className={styleImage}
+                          key={index}
+                          variants={variants}
+                          src={imagesApi[value]}
+                          alt="show-image"
+                          style={{
+                            transitionDuration: "300ms",
+                            scale: currentScale,
+                            justifySelf: "center",
+                            margin: "auto",
+                            zIndex: 10,
+                            position: "relative",
+                          }}
+                        />
+                      );
+                    } else {
+                      return (
+                        <motion.img
+                          className={styleImage}
+                          key={index}
+                          src={imagesApi[value]}
+                          alt="show-image"
+                          style={{ justifySelf: "center", zIndex: -1 }}
+                        />
+                      );
+                    }
+                  })}
+                </div>
+                {currentIndex !== undefined ? (
+                  <span
+                    onClick={() => handleBackImage(currentIndex[1])}
+                    className="cursor-pointer absolute left-0 sm:left-[100px]  top-0 z-20  sm:top-[80px]   text-[#ffd392] max-sm:text-[50px]  text-[70px]"
+                  >
+                    &#60;
+                  </span>
+                ) : (
+                  ""
+                )}
+                {currentIndex !== undefined ? (
+                  <span
+                    onClick={() => handleNextImage(currentIndex[1])}
+                    className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px] z-20   cursor-pointer text-[#ffd392] max-sm:text-[50px] text-[70px]"
+                  >
+                    &#62;
+                  </span>
+                ) : (
+                  ""
+                )}
               </div>
-              {currentIndex !== undefined ? (
-                <span
-                  onClick={() => handleBackImage(currentIndex[1])}
-                  className="cursor-pointer absolute left-0 sm:left-[100px]  top-0 z-20  sm:top-[80px]   text-[#ffd392] max-sm:text-[50px]  text-[70px]"
-                >
-                  &#60;
-                </span>
-              ) : (
-                ""
-              )}
-              {currentIndex !== undefined ? (
-                <span
-                  onClick={() => handleNextImage(currentIndex[1])}
-                  className="absolute top-0 sm:top-[80px] right-0 sm:right-[100px] z-20   cursor-pointer text-[#ffd392] max-sm:text-[50px] text-[70px]"
-                >
-                  &#62;
-                </span>
-              ) : (
-                ""
-              )}
-            </div>
-          </>
-        )}
-        <h1 className="text-[30px] text-[#ffc66e] pb-[10px] text-center">
-          Photogram
-        </h1>
-        <div className="flex flex-col items-center align-middle h-min justify-center gap-2 ">
-          <p className="text-5xl text-[#7d7d7d] font-medium">Your pictures: </p>
-          <h1 className="text-1xl">
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            </>
+          )}
+          <h1 className="text-[30px] text-[#ffc66e] pb-[10px] text-center">
+            Photogram
           </h1>
-          <input
-            accept=".jpg, .png, .jpeg"
-            ref={refInput}
-            hidden
-            type="file"
-            name="image-download"
-            id="image-download"
-            onChange={(e) => changeHangle(e)}
-            // value={currentFile}
-          />
-          <label htmlFor="image-download">
-            <img
-              src="/images/icon-add.png"
-              width={45}
-              height={45}
-              alt="add image"
-              className="icon-add"
+          <div className="flex flex-col items-center align-middle h-min justify-center gap-2 ">
+            <p className="text-5xl text-[#7d7d7d] font-medium">
+              Your pictures:{" "}
+            </p>
+            <h1 className="text-1xl">
+              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            </h1>
+            <input
+              accept=".jpg, .png, .jpeg"
+              ref={refInput}
+              hidden
+              type="file"
+              name="image-download"
+              id="image-download"
+              onChange={(e) => changeHangle(e)}
+              // value={currentFile}
             />
-          </label>
-          <motion.div
-            initial="initial"
-            animate="visible"
-            variants={variants}
-            className="h-1 bg-orange-300 self-start flex"
-          ></motion.div>
-          <ImagePhoto
-            currentFile={currentFile}
-            setModalBoolean={setModalBoolean}
-            setCurrentIndex={setCurrentIndex}
-            imagesApi={imagesApi}
-          />
+            <label htmlFor="image-download">
+              <img
+                src="/images/icon-add.png"
+                width={45}
+                height={45}
+                alt="add image"
+                className="icon-add"
+              />
+            </label>
+            <motion.div
+              initial="initial"
+              animate="visible"
+              variants={variants}
+              className="h-1 bg-orange-300 self-start flex"
+            ></motion.div>
+            <ImagePhoto
+              currentFile={currentFile}
+              setModalBoolean={setModalBoolean}
+              setCurrentIndex={setCurrentIndex}
+              imagesApi={imagesApi}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <Footer />
     </>
   );

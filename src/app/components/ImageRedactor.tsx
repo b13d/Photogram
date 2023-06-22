@@ -13,7 +13,11 @@ interface IAreaImg {
   left: number;
 }
 
-export default function ImageRedactor() {
+interface IProps {
+  imageUrl: string;
+}
+
+export default function ImageRedactor(props: IProps) {
   const [currentImg, setCurrentImg] = useState<HTMLImageElement>();
   const [sizeImg, setSizeImg] = useState<ISizeImg>();
   const [areaImg, setAreaImg] = useState<IAreaImg>({
@@ -64,6 +68,8 @@ export default function ImageRedactor() {
         console.log(areaImg);
         console.log(canvas);
 
+        debugger
+
         var dataURL = canvas.toDataURL("image/png");
 
         setShowResult(true);
@@ -71,13 +77,14 @@ export default function ImageRedactor() {
 
         console.log(dataURL);
       };
-      image.src = "/images/Тишка.jpg";
+      // image.src = "/images/Тишка.jpg";
+      image.src = props.imageUrl;
     }
   }
 
   useEffect(() => {
     const image = new Image();
-    const url: string = "/images/Тишка.jpg";
+    const url: string = props.imageUrl;
 
     image.onload = () => {
       setCurrentImg(image);
@@ -223,13 +230,13 @@ export default function ImageRedactor() {
 
   return (
     <>
-      <div className="flex m-auto relative items-start justify-around">
+      <div className="z-10 flex m-auto relative items-start justify-around">
         {showResult && (
           <>
-            <div
+            {/* <div
               onClick={() => handleCloseModal()}
               className="w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[100]"
-            ></div>
+            ></div> */}
             <motion.div
               // style={{ width, height }}
               className="rounded-lg mt-10 z-[150] m-auto  fixed"
@@ -254,7 +261,10 @@ export default function ImageRedactor() {
                   <button className="bg-[#2f5239] font-semibold py-1 px-3 hover:bg-[#3e9256] duration-200">
                     Yes
                   </button>
-                  <button className="bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200">
+                  <button
+                    onClick={() => handleCloseModal()}
+                    className="bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200"
+                  >
                     No
                   </button>
                 </div>
@@ -263,7 +273,7 @@ export default function ImageRedactor() {
           </>
         )}
         {/* <canvas id="canvas" className=""></canvas> */}
-        <div ref={constraintsRef} className={` bg-[#000000b5] relative `}>
+        <motion.div ref={constraintsRef} className={` bg-[#000000b5] relative `}>
           {/* <motion.div style={{ width, height, x, y }} className="absolute">
             <motion.div
               onMouseDownCapture={(e) => handleMove(e)}
@@ -311,10 +321,10 @@ export default function ImageRedactor() {
             ref={refCurrentImg}
             id="source"
             className="z-[-1] relative"
-            src="/images/Тишка.jpg"
+            src={props.imageUrl}
             alt=""
           />
-        </div>
+        </motion.div>
         <motion.div
           style={{
             y: scrollY,

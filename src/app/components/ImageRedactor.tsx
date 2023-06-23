@@ -15,6 +15,9 @@ interface IAreaImg {
 
 interface IProps {
   imageUrl: string;
+  setCurrentFile: React.Dispatch<React.SetStateAction<string>>;
+  fileUpload: (url: string) => void;
+  setShowRedactor: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function ImageRedactor(props: IProps) {
@@ -46,12 +49,10 @@ export default function ImageRedactor(props: IProps) {
     const ctx = canvas.getContext("2d");
     const image = document.getElementById("source") as HTMLImageElement;
 
-    image.crossOrigin = "anonymous";
+    // image.crossOrigin = "anonymous";
 
     if (image !== null) {
       image.onload = function () {
-        // debugger;
-
         ctx?.drawImage(
           image,
           areaImg.left,
@@ -64,22 +65,25 @@ export default function ImageRedactor(props: IProps) {
           canvas.clientHeight
         );
 
+        console.log(areaImg)
+
         // canvas.width = canvas.clientWidth;
         // canvas.height = canvas.clientHeight;
 
-        console.log(areaImg);
-        console.log(canvas);
-
-        debugger;
+        // console.log(areaImg);
+        // console.log(canvas);
 
         var dataURL = canvas.toDataURL("image/png");
+
+          console.log(dataURL)
 
         setShowResult(true);
         setNewUrlImg(dataURL);
 
-        console.log(dataURL);
+        // console.log(dataURL);
       };
       // image.src = "/images/Тишка.jpg";
+      console.log(props.imageUrl)
       image.src = props.imageUrl;
     }
   }
@@ -118,7 +122,7 @@ export default function ImageRedactor(props: IProps) {
     if (refCurrentImg.current !== null) {
       let tempImg = refCurrentImg.current as HTMLImageElement;
 
-      console.log(Number(element.target.value));
+      // console.log(Number(element.target.value));
 
       if (Number(element.target.value) <= 1024) {
         switch (index) {
@@ -162,18 +166,12 @@ export default function ImageRedactor(props: IProps) {
               return setAreaImg(tempAreaImg);
             }
             break;
-          // case 2:
-          //   top = Number(element.target.value);
-          //   break;
-          // case 3:
-          //   left = Number(element.target.value);
-          //   break;
           default:
             console.log("Ошибка");
             break;
         }
 
-        console.log(tempArea);
+        // console.log(tempArea);
 
         setAreaImg(tempArea);
       }
@@ -188,13 +186,13 @@ export default function ImageRedactor(props: IProps) {
       left: x.getPrevious(),
     };
 
-    console.log("Отпустил");
+    // console.log("Отпустил");
 
-    console.log("x: " + x.getPrevious() + " y:" + y.getPrevious());
+    // console.log("x: " + x.getPrevious() + " y:" + y.getPrevious());
 
-    console.log(
-      "height: " + height.getPrevious() + " width: " + width.getPrevious()
-    );
+    // console.log(
+    //   "height: " + height.getPrevious() + " width: " + width.getPrevious()
+    // );
 
     setAreaImg(tempArea);
   };
@@ -202,37 +200,68 @@ export default function ImageRedactor(props: IProps) {
   // console.log("render")
 
   const handleCutImage = () => {
-    console.log("cut image");
+    // console.log("cut image");
 
     ChangeSizeImage();
   };
 
-  // const handleResizeCanvas = (name: string) => {
-  //   console.log(name);
-  // };
+  const handleCloseModal = (
+    eDiv: React.MouseEvent<HTMLDivElement, MouseEvent> | undefined,
+    eButton: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined
+  ) => {
+    let temp;
 
-  // const handleMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-  //   console.log(e.clientX);
+    // console.log(eDiv);
+    // console.log(eButton);
 
-  //   let tempDiv = e.target as HTMLDivElement;
+    if (eDiv !== undefined) {
+      temp = eDiv.target as HTMLDivElement;
+    } else if (eButton !== undefined) {
+      temp = eButton.target as HTMLDivElement;
+    }
 
-  //   tempDiv.style.left = "1px";
-  // };
+    if (
+      temp !== undefined &&
+      temp.classList.contains("background") &&
+      setCurrentImg !== undefined
+    ) {
+      setShowResult(false);
 
-  console.log(areaImg);
+      // props.setShowRedactor(false);
 
-  const handleCloseModal = () => {
+      // props.setCurrentFile("");
+
+      const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+
+      const context = canvas.getContext("2d");
+      context?.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
+  const handleSaveImg = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    props.fileUpload(newUrlImg);
+
     setShowResult(false);
+    setNewUrlImg("");
+
+    // props.setCurrentFile("");
 
     const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 
     const context = canvas.getContext("2d");
     context?.clearRect(0, 0, canvas.width, canvas.height);
+
+    props.setShowRedactor(false);
   };
 
   return (
     <>
-      <div className="z-10 flex m-auto relative items-start justify-around">
+      <div
+        onMouseDown={(e) => handleCloseModal(e, undefined)}
+        className="background z-10 flex m-auto relative items-start justify-around"
+      >
         {showResult && (
           <>
             {/* <div
@@ -260,12 +289,15 @@ export default function ImageRedactor(props: IProps) {
                 </h1>
 
                 <div className="flex gap-3">
-                  <button className="bg-[#2f5239] font-semibold py-1 px-3 hover:bg-[#3e9256] duration-200">
+                  <button
+                    onClick={(e) => handleSaveImg(e)}
+                    className="bg-[#2f5239] font-semibold py-1 px-3 hover:bg-[#3e9256] duration-200"
+                  >
                     Yes
                   </button>
                   <button
-                    onClick={() => handleCloseModal()}
-                    className="bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200"
+                    onMouseDown={(e) => handleCloseModal(undefined, e)}
+                    className="background bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200"
                   >
                     No
                   </button>

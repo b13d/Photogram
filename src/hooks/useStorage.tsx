@@ -6,16 +6,15 @@ import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 export function useStorage(
   setCurrentFile: React.Dispatch<React.SetStateAction<string>>,
   setProgress: React.Dispatch<React.SetStateAction<number>>,
-  element: React.FormEvent<HTMLInputElement>,
+  element: File,
   setLastID: React.Dispatch<React.SetStateAction<string>>
 ) {
   const { db, storage } = ConfigFirebase();
 
   const storageRef = ref(storage, `images/${uuidv4()}`);
 
-  if (element.currentTarget.files) {
-    
-    const file = element.currentTarget.files[0];
+  if (element) {
+    const file = element;
     const uploadTask = uploadBytesResumable(storageRef, file);
 
 

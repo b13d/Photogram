@@ -55,7 +55,8 @@ export default function ImagePhoto({
   const variants = {
     initial: {
       transition: { duration: 1 },
-      opacity: 0.8,
+      opacity: 1,
+      filter: 'brightness(1)',
     },
   };
 
@@ -70,7 +71,7 @@ export default function ImagePhoto({
             viewport={{ once: true }}
             whileInView="initial"
             variants={variants}
-            whileHover={{ opacity: 1 }}
+            whileHover={{filter: 'brightness(1.25)',}}
             onClick={(e) => handleWatchImage(index)}
             style={{ height: 300 }}
             className="rounded-md shadow-md cursor-pointer z-[0] object-cover"

@@ -34,6 +34,7 @@ export default function Main() {
   const [inZoom, setInZoom] = useState<boolean>(false);
   const [currentScale, setCurrentScale] = useState<number>(1);
   const [lastID, setLastID] = useState<string>("");
+  const [showRedactor, setShowRedactor] = useState<boolean>(false);
 
   let refInput = useRef<HTMLInputElement>(null);
 
@@ -47,8 +48,8 @@ export default function Main() {
     ) {
       // debugger;
 
-      console.log(refInput);
-      console.log(refInput.current);
+      // console.log(refInput);
+      // console.log(refInput.current);
 
       let url: string = "";
       let name = element.currentTarget.files[0].name;
@@ -57,36 +58,15 @@ export default function Main() {
       fileReader.onload = function () {
         url = fileReader.result !== null ? fileReader.result.toString() : "";
 
-        fetch(url)
-          .then((res) => res.blob())
-          .then((blob) => {
-            const file = new File(
-              [blob],
-              name !== null ? name : "random-name.png",
-              blob
-            );
-            console.log(file);
-          });
-        // }
-
-        setCurrentFile(url);
+        CheckImage(url);
       };
-
-      // let url = element.currentTarget.value;
-
-      // const img = new Image();
-      // img.onload = function () {
-      //   alert(img.width + "x" + img.height);
-      // };
-
-      // console.log(image.width);
 
       let temp: HTMLInputElement | undefined = undefined;
       if (refInput.current !== null) {
         temp = refInput.current;
       }
 
-      console.log(element.currentTarget.files[0]);
+      // console.log(element.currentTarget.files[0]);
       fileReader.readAsDataURL(element.currentTarget.files[0]);
 
       // linkStorage(setCurrentFile, setProgress, element, setLastID);
@@ -97,71 +77,54 @@ export default function Main() {
     }
   };
 
-  useEffect(() => {
-    // проверка изображения на размеры
+  function fileUpload(url: string) {
+    // debugger;
 
-    function CheckImage() {
-      const imagesRef = doc(db, "images", "url");
-      console.log(currentFile);
+    fetch(url)
+      .then((res) => res.blob())
+      .then((blob) => {
+        const file = new File([blob], "random-name.png", blob);
+        // console.log(file);
 
-      // let image = new Image();
+        let element = file;
 
-      const img = new Image();
-      img.onload = async function () {
-        if (lastID !== "" && lastID.length > 5 && img.complete) {
-          const desertRef = ref(storage, currentFile);
+        linkStorage(setCurrentFile, setProgress, element, setLastID);
+        linkUseFirestore(url, setImages);
+      });
+  }
 
-          if (
-            img.width < 500 ||
-            img.height < 500 ||
-            img.width > 2000 ||
-            img.height > 2000
-          ) {
-            deleteObject(desertRef)
-              .then(() => {})
-              .catch((error) => {
-                console.log("Ошибка такого файла не существует!!!");
-              });
+  // useEffect(() => {
+  // проверка изображения на размеры
 
-            await deleteDoc(doc(db, "images", lastID));
+  function CheckImage(url: string) {
+    // debugger;
+    // const imagesRef = doc(db, "images", "url");
+    // console.log(url);
 
-            if (img.width < 500 || img.height < 500) {
-              alert(
-                "Маленький размер - " +
-                  " width:" +
-                  img.width +
-                  " height" +
-                  img.height
-              );
-            } else {
-              alert(
-                "Слишком большой размер изображения - " +
-                  " width:" +
-                  img.width +
-                  " height" +
-                  img.height
-              );
-            }
-          } else {
-            alert("Картинка хорошего размера!");
-          }
-          // setCurrentFile("");
-          // setLastID("");
-        }
-      };
+    let image = new Image();
 
-      img.src = currentFile;
+    image.onload = function () {
+      if (
+        image.width < 300 ||
+        image.height < 300 ||
+        image.width > 1280 ||
+        image.height > 1280
+      ) {
+        alert("Изображение не подходит");
+        return false;
+      } else {
+        setShowRedactor(true);
+        setCurrentFile(url);
+      }
+    };
 
-      console.log(lastID);
-    }
+    image.src = url;
 
-    CheckImage();
+    // const desertRef = ref(storage, currentFile);
 
-    // console.log(image);
-
-    // console.log("width: " + image.width);
-    // console.log("height: " + image.height);
-  }, [currentFile, lastID]);
+    // setCurrentFile("");
+    // setLastID("");
+  }
 
   useEffect(() => {
     linkUseFirestore(currentFile, setImages);
@@ -239,7 +202,7 @@ export default function Main() {
   };
 
   const handleTap = () => {
-    console.log("Tap");
+    // console.log("Tap");
     if (inZoom) {
       setCurrentScale(1);
       setInZoom(false);
@@ -247,15 +210,6 @@ export default function Main() {
       setCurrentScale(1.5);
       setInZoom(true);
     }
-  };
-
-  const handleCloseModalRedactor = () => {
-    // setShowResult(false);
-
-    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-
-    const context = canvas.getContext("2d");
-    context?.clearRect(0, 0, canvas.width, canvas.height);
   };
 
   return (
@@ -267,16 +221,21 @@ export default function Main() {
         />
         <link rel="stylesheet" href="croppie.css" />
       </Head>
-      {currentFile.length > 5 && (
+      {showRedactor && (
         <>
           <div
-            onClick={() => handleCloseModalRedactor()}
-            className="w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[5]"
+            // onClick={(e) => handleCloseModalRedactor(e)}
+            className="background w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[5]"
           ></div>
-          <ImageRedactor imageUrl={currentFile} />
+          <ImageRedactor
+            imageUrl={currentFile}
+            setCurrentFile={setCurrentFile}
+            fileUpload={fileUpload}
+            setShowRedactor={setShowRedactor}
+          />
         </>
       )}
-      {currentFile.length === 0 && (
+      {!showRedactor && (
         <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
           {modalBoolean && (
             <>
@@ -398,7 +357,7 @@ export default function Main() {
           </div>
         </div>
       )}
-      <Footer />
+      {!showRedactor && <Footer />}
     </>
   );
 }

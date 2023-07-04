@@ -236,7 +236,7 @@ export default function Main() {
         </>
       )}
       {!showRedactor && (
-        <div className="max-w-[1170px] bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] my-10">
+        <div className="max-w-[1170px] max-sm:mb-2 max-sm:mx-2 bg-[#f9f4d6] shadow-2xl pb-10 rounded-md min-h-[100vh] m-auto pt-[30px] sm:my-10">
           {modalBoolean && (
             <>
               <div

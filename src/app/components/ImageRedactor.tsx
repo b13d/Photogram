@@ -49,23 +49,54 @@ export default function ImageRedactor(props: IProps) {
     const ctx = canvas.getContext("2d");
     const image = document.getElementById("source") as HTMLImageElement;
 
-    // image.crossOrigin = "anonymous";
+    console.log(image.width);
+    console.log(image.height);
 
+    console.log(image.width);
+    let testWidth = image.naturalWidth - image.width;
+    let testHeight = image.naturalHeight - image.height;
+
+    let initialValues = {
+      height: image.height,
+      width: image.width,
+    };
+    // let heightWindow = document.body.clientHeight;
+    // let widthWindow = document.body.clientWidth;
+
+    console.log(testWidth);
+    console.log(testHeight);
+    console.log(areaImg.left);
+    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
     if (image !== null) {
       image.onload = function () {
+        console.log(initialValues);
+        console.log(areaImg.width);
+        console.log(image.width);
+        console.log(image.naturalWidth);
+        console.log(testWidth);
+        // image.style.containIntrinsicWidth = "320px"
+        // image.style.containIntrinsicHeight = "320px"
         ctx?.drawImage(
           image,
           areaImg.left,
+          // image.naturalWidth === image.width ? areaImg.left : areaImg.left + testWidth / 2,
           areaImg.top,
-          areaImg.width,
-          areaImg.height,
+          // image.naturalHeight === image.height ? areaImg.top : areaImg.top + testHeight / 2,
+          image.naturalWidth === image.width
+            ? areaImg.width
+            : image.width - testWidth,
+          image.naturalHeight === image.height
+            ? areaImg.height
+            : image.height - testHeight,
+          // testWidth,
+          // testHeight,
           0,
           0,
           canvas.clientWidth,
           canvas.clientHeight
         );
 
-        console.log(areaImg)
+        // console.log(areaImg);
 
         // canvas.width = canvas.clientWidth;
         // canvas.height = canvas.clientHeight;
@@ -75,7 +106,7 @@ export default function ImageRedactor(props: IProps) {
 
         var dataURL = canvas.toDataURL("image/png");
 
-          console.log(dataURL)
+        // console.log(dataURL);
 
         setShowResult(true);
         setNewUrlImg(dataURL);
@@ -83,7 +114,7 @@ export default function ImageRedactor(props: IProps) {
         // console.log(dataURL);
       };
       // image.src = "/images/Тишка.jpg";
-      console.log(props.imageUrl)
+      // console.log(props.imageUrl);
       image.src = props.imageUrl;
     }
   }
@@ -260,7 +291,7 @@ export default function ImageRedactor(props: IProps) {
     <>
       <div
         onMouseDown={(e) => handleCloseModal(e, undefined)}
-        className="background z-10 flex m-auto relative items-start justify-around"
+        className="background z-10 max-sm:flex-col flex m-auto relative items-start justify-around"
       >
         {showResult && (
           <>
@@ -270,7 +301,7 @@ export default function ImageRedactor(props: IProps) {
             ></div> */}
             <motion.div
               // style={{ width, height }}
-              className="rounded-lg mt-10 z-[150] m-auto  fixed"
+              className="rounded-lg mt-10 z-[150] m-auto  max-sm:relative fixed"
             >
               <motion.img
                 style={{
@@ -354,7 +385,7 @@ export default function ImageRedactor(props: IProps) {
             }}
             className="backdrop-brightness-[4] bg-[#00000000] opacity-50  z-10 absolute"
           ></motion.canvas>
-          <img
+          <motion.img
             ref={refCurrentImg}
             id="source"
             className="z-[-1] relative"
@@ -364,9 +395,9 @@ export default function ImageRedactor(props: IProps) {
         </motion.div>
         <motion.div
           style={{
-            y: scrollY,
+            y: window.document.body.clientWidth > 1000 ? scrollY : "",
           }}
-          className="flex mt-5 bg-[#ffce74] rounded-md rounded-e-3xl rounded-bl-3xl p-5 flex-col gap-4 items-center"
+          className="flex mt-5 bg-[#ffce74] max-sm:w-[80%] m-auto rounded-md rounded-e-3xl rounded-bl-3xl p-5 flex-col gap-4 items-center"
         >
           <div className="flex items-center gap-5">
             <label className="w-[50px]" htmlFor="height-input">
@@ -375,7 +406,7 @@ export default function ImageRedactor(props: IProps) {
             <input
               max={1024}
               id="height-input"
-              className="border-2 px-4 py-2 shadow-md border-none rounded-md"
+              className="border-2 px-4 py-2 w-full shadow-md border-none rounded-md"
               type="number"
               // value={height.getPrevious()}
               value={areaImg.height.toString().replace(/^0+/, "")}
@@ -390,7 +421,7 @@ export default function ImageRedactor(props: IProps) {
             <input
               max={1024}
               id="width-input"
-              className="border-2 px-4 py-2 border-none shadow-md rounded-md"
+              className="border-2 px-4 py-2 w-full border-none shadow-md rounded-md"
               type="number"
               // value={width.getPrevious()}
               value={areaImg.width.toString().replace(/^0+/, "")}
@@ -403,7 +434,7 @@ export default function ImageRedactor(props: IProps) {
             </label>
             <input
               id="top-input"
-              className="border-2 bg-white px-4 py-2 border-none shadow-md rounded-md"
+              className="border-2 bg-white px-4 w-full py-2 border-none shadow-md rounded-md"
               type="number"
               value={areaImg?.top}
               disabled
@@ -416,7 +447,7 @@ export default function ImageRedactor(props: IProps) {
             </label>
             <input
               id="left-input"
-              className="border-2 bg-white px-4 py-2 border-none shadow-md rounded-md"
+              className="border-2 bg-white px-4 w-full py-2 border-none shadow-md rounded-md"
               type="number"
               disabled
               value={areaImg?.left}

@@ -27,6 +27,7 @@ body {
 }
 
 .cropper-container {
+  /* scale: 0.7; */
   direction: ltr;
   font-size: 0;
   line-height: 0;

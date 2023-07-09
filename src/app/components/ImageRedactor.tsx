@@ -163,7 +163,7 @@ export default function ImageRedactor(props: IProps) {
 
   return (
     <div className="container m-auto ">
-      <div className="relative mt-20 w-[821px] h-[497px] m-auto">
+      <div className="relative mt-20 w-[400px] h-[400px] m-auto">
         <img
           className="brightness-50  block max-w-full"
           id="image"

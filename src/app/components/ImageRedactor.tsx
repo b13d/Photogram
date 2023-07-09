@@ -37,7 +37,7 @@ export default function ImageRedactor(props: IProps) {
     var buttons = document.getElementById("buttons") as HTMLDivElement;
     var croppable = false;
     var cropper = new Cropper(image, {
-      aspectRatio: 1,
+      // aspectRatio: 1,
       viewMode: 1,
       ready: function () {
         croppable = true;
@@ -163,7 +163,7 @@ export default function ImageRedactor(props: IProps) {
 
   return (
     <div className="container m-auto ">
-      <div className="relative mt-20">
+      <div className="relative mt-20 w-[821px] h-[497px] m-auto">
         <img
           className="brightness-50  block max-w-full"
           id="image"

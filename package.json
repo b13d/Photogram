@@ -13,6 +13,7 @@
     "@types/react": "18.2.7",
     "@types/react-dom": "18.2.4",
     "autoprefixer": "10.4.14",
+    "cropperjs": "^1.5.13",
     "eslint": "8.41.0",
     "eslint-config-next": "13.4.4",
     "eslint-plugin-react-hooks": "^4.6.0",

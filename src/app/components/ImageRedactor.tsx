@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useScroll } from "framer-motion";
+import Cropper from "cropperjs";
 
 interface ISizeImg {
   height: number;
@@ -21,449 +22,197 @@ interface IProps {
 }
 
 export default function ImageRedactor(props: IProps) {
-  const [currentImg, setCurrentImg] = useState<HTMLImageElement>();
-  const [sizeImg, setSizeImg] = useState<ISizeImg>();
-  const [areaImg, setAreaImg] = useState<IAreaImg>({
-    height: 200,
-    width: 200,
-    top: 0,
-    left: 0,
-  });
-  const [showResult, setShowResult] = useState(false);
-  const [newUrlImg, setNewUrlImg] = useState<string>("");
+  const [showImg, setShowImg] = useState<boolean>(false);
+  const [newUrlImg, setNewUrlImg] = useState<string>();
 
-  const { scrollY } = useScroll();
+  useEffect(() => {
+    var image = document.getElementById("image") as HTMLImageElement;
+    var buttonCrop = document.getElementById(
+      "button-crop"
+    ) as HTMLButtonElement;
+    var buttonReset = document.getElementById(
+      "button-reset"
+    ) as HTMLButtonElement;
+    var result = document.getElementById("result") as HTMLDivElement;
+    var buttons = document.getElementById("buttons") as HTMLDivElement;
+    var croppable = false;
+    var cropper = new Cropper(image, {
+      aspectRatio: 1,
+      viewMode: 1,
+      ready: function () {
+        croppable = true;
+      },
+    });
 
-  // скорее всего ошибка, ибо я меняю
+    buttonCrop.onclick = function () {
+      var croppedCanvas;
+      var roundedCanvas;
+      var roundedImage;
+      var valuesImage;
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  let width = useMotionValue(200);
-  let height = useMotionValue(200);
+      if (!croppable) {
+        return;
+      }
 
-  const constraintsRef = useRef(null);
-  const refCurrentImg = useRef(null);
+      // Crop
+      croppedCanvas = cropper.getCroppedCanvas();
 
-  function ChangeSizeImage() {
-    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d");
-    const image = document.getElementById("source") as HTMLImageElement;
+      // Round
+      roundedCanvas = getRoundedCanvas(croppedCanvas);
 
-    console.log(image.width);
-    console.log(image.height);
+      if (roundedCanvas === undefined) {
+        return;
+      }
 
-    console.log(image.width);
-    let testWidth = image.naturalWidth - image.width;
-    let testHeight = image.naturalHeight - image.height;
+      setShowImg((value) => (value === true ? false : true));
 
-    let initialValues = {
-      height: image.height,
-      width: image.width,
+      setNewUrlImg(roundedCanvas.toDataURL());
+
+      // Show
+      roundedImage = document.createElement("img");
+      valuesImage = document.createElement("p");
+      roundedImage.src = roundedCanvas.toDataURL();
+      roundedImage.classList.add("m-auto");
+      result.innerHTML = "";
+      valuesImage.style.color = "gray";
+      valuesImage.classList.add("text-center");
+      valuesImage.innerHTML = `${
+        "width: " + roundedCanvas.width + " height: " + roundedCanvas.height
+      }`;
+      roundedImage.clientWidth;
+      result.appendChild(roundedImage);
+      result.appendChild(valuesImage);
+      buttons.classList.remove("hidden");
+      result.appendChild(buttons);
+      result.classList.remove("hidden");
     };
-    // let heightWindow = document.body.clientHeight;
-    // let widthWindow = document.body.clientWidth;
 
-    console.log(testWidth);
-    console.log(testHeight);
-    console.log(areaImg.left);
-    // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
-    if (image !== null) {
-      image.onload = function () {
-        console.log(initialValues);
-        console.log(areaImg.width);
-        console.log(image.width);
-        console.log(image.naturalWidth);
-        console.log(testWidth);
-        // image.style.containIntrinsicWidth = "320px"
-        // image.style.containIntrinsicHeight = "320px"
-        ctx?.drawImage(
-          image,
-          areaImg.left,
-          // image.naturalWidth === image.width ? areaImg.left : areaImg.left + testWidth / 2,
-          areaImg.top,
-          // image.naturalHeight === image.height ? areaImg.top : areaImg.top + testHeight / 2,
-          image.naturalWidth === image.width
-            ? areaImg.width
-            : image.width - testWidth,
-          image.naturalHeight === image.height
-            ? areaImg.height
-            : image.height - testHeight,
-          // testWidth,
-          // testHeight,
-          0,
-          0,
-          canvas.clientWidth,
-          canvas.clientHeight
-        );
+    buttonReset.onclick = function () {
+      cropper.reset();
+    };
 
-        // console.log(areaImg);
+    document.body.style.overflow = "hidden";
+  }, []);
 
-        // canvas.width = canvas.clientWidth;
-        // canvas.height = canvas.clientHeight;
+  function getRoundedCanvas(sourceCanvas: HTMLCanvasElement) {
+    var canvas = document.createElement("canvas");
+    var context = canvas.getContext("2d");
+    var width = sourceCanvas.width;
+    var height = sourceCanvas.height;
 
-        // console.log(areaImg);
-        // console.log(canvas);
+    canvas.width = width;
+    canvas.height = height;
 
-        var dataURL = canvas.toDataURL("image/png");
-
-        // console.log(dataURL);
-
-        setShowResult(true);
-        setNewUrlImg(dataURL);
-
-        // console.log(dataURL);
-      };
-      // image.src = "/images/Тишка.jpg";
-      // console.log(props.imageUrl);
-      image.src = props.imageUrl;
+    if (context !== null) {
+      context.imageSmoothingEnabled = true;
+      context.drawImage(sourceCanvas, 0, 0, width, height);
+      context.globalCompositeOperation = "destination-in";
+      context.beginPath();
+      context.fill();
+      return canvas;
     }
   }
 
-  useEffect(() => {
-    const image = new Image();
-    const url: string = props.imageUrl;
+  console.log(showImg);
 
-    image.onload = () => {
-      setCurrentImg(image);
+  const handleCloseModal = () => {
+    var result = document.getElementById("result") as HTMLDivElement;
+    var buttons = document.getElementById("buttons") as HTMLDivElement;
 
-      let tempSize: ISizeImg = {
-        height: image.height,
-        width: image.width,
-      };
+    result.classList.add("hidden");
+    buttons.classList.add("hidden");
 
-      setSizeImg(tempSize);
-    };
-
-    image.src = url;
-  }, []);
-
-  const handleChange = (
-    index: number,
-    element: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    let tempArea: IAreaImg = {
-      height: areaImg.height,
-      width: areaImg.width,
-      top: areaImg.top,
-      left: areaImg.left,
-      // top: areaImg.top,
-      // left: areaImg.left,
-    };
-
-    if (refCurrentImg.current !== null) {
-      let tempImg = refCurrentImg.current as HTMLImageElement;
-
-      // console.log(Number(element.target.value));
-
-      if (Number(element.target.value) <= 1024) {
-        switch (index) {
-          case 0:
-            if (tempImg.height >= Number(element.target.value)) {
-              height.set(Number(element.target.value));
-
-              if (sizeImg !== undefined) {
-                areaImg.top + Number(element.target.value) > sizeImg?.height
-                  ? y.set(0)
-                  : y;
-              }
-
-              let tempAreaImg: IAreaImg = {
-                height: Number(element.target.value),
-                width: width.getPrevious(),
-                top: areaImg.top,
-                left: areaImg.left,
-              };
-
-              return setAreaImg(tempAreaImg);
-            }
-            break;
-          case 1:
-            if (tempImg.width >= Number(element.target.value)) {
-              width.set(Number(element.target.value));
-
-              if (sizeImg !== undefined) {
-                areaImg.left + Number(element.target.value) > sizeImg?.width
-                  ? x.set(0)
-                  : x;
-              }
-
-              let tempAreaImg: IAreaImg = {
-                height: height.getPrevious(),
-                width: Number(element.target.value),
-                top: areaImg.top,
-                left: areaImg.left,
-              };
-
-              return setAreaImg(tempAreaImg);
-            }
-            break;
-          default:
-            console.log("Ошибка");
-            break;
-        }
-
-        // console.log(tempArea);
-
-        setAreaImg(tempArea);
-      }
-    }
-  };
-
-  const handleChangeDiv = () => {
-    let tempArea: IAreaImg = {
-      height: height.getPrevious(),
-      width: width.getPrevious(),
-      top: y.getPrevious(),
-      left: x.getPrevious(),
-    };
-
-    // console.log("Отпустил");
-
-    // console.log("x: " + x.getPrevious() + " y:" + y.getPrevious());
-
-    // console.log(
-    //   "height: " + height.getPrevious() + " width: " + width.getPrevious()
-    // );
-
-    setAreaImg(tempArea);
-  };
-
-  // console.log("render")
-
-  const handleCutImage = () => {
-    // console.log("cut image");
-
-    ChangeSizeImage();
-  };
-
-  const handleCloseModal = (
-    eDiv: React.MouseEvent<HTMLDivElement, MouseEvent> | undefined,
-    eButton: React.MouseEvent<HTMLButtonElement, MouseEvent> | undefined
-  ) => {
-    let temp;
-
-    // console.log(eDiv);
-    // console.log(eButton);
-
-    if (eDiv !== undefined) {
-      temp = eDiv.target as HTMLDivElement;
-    } else if (eButton !== undefined) {
-      temp = eButton.target as HTMLDivElement;
-    }
-
-    if (
-      temp !== undefined &&
-      temp.classList.contains("background") &&
-      setCurrentImg !== undefined
-    ) {
-      setShowResult(false);
-
-      // props.setShowRedactor(false);
-
-      // props.setCurrentFile("");
-
-      const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-
-      const context = canvas.getContext("2d");
-      context?.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    setShowImg(false);
   };
 
   const handleSaveImg = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    var result = document.getElementById("result") as HTMLDivElement;
+    var buttons = document.getElementById("buttons") as HTMLDivElement;
+
+    result.classList.add("hidden");
+    buttons.classList.add("hidden");
+
+    setShowImg(false);
+
+    if (newUrlImg === undefined) {
+      return;
+    }
+
+    props.setShowRedactor(false);
     props.fileUpload(newUrlImg);
+  };
 
-    setShowResult(false);
-    setNewUrlImg("");
+  const handleBack = () => {
+    var result = document.getElementById("result") as HTMLDivElement;
+    var buttons = document.getElementById("buttons") as HTMLDivElement;
 
-    // props.setCurrentFile("");
+    result.classList.add("hidden");
+    buttons.classList.add("hidden");
 
-    const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-
-    const context = canvas.getContext("2d");
-    context?.clearRect(0, 0, canvas.width, canvas.height);
+    setShowImg(false);
 
     props.setShowRedactor(false);
   };
-
   return (
-    <>
-      <div
-        onMouseDown={(e) => handleCloseModal(e, undefined)}
-        className="background z-10 max-sm:flex-col flex m-auto relative items-start justify-around"
-      >
-        {showResult && (
-          <>
-            {/* <div
-              onClick={() => handleCloseModal()}
-              className="w-full h-full top-0 left-0 fixed bg-[#2b2b2bc9] z-[100]"
-            ></div> */}
-            <motion.div
-              // style={{ width, height }}
-              className="rounded-lg mt-10 z-[150] m-auto  max-sm:relative fixed"
-            >
-              <motion.img
-                style={{
-                  width:
-                    areaImg.width > 300 ? areaImg.width / 2 : areaImg.width,
-                  height:
-                    areaImg.height > 300 ? areaImg.height / 2 : areaImg.height,
-                }}
-                className="rounded-md m-auto"
-                src={newUrlImg}
-                alt=""
-              />
-              <div className="items-center text-center mt-10 p-5 flex flex-col gap-4 justify-center h-[150px] rounded-b-md z-[150] bg-[#2b2b2bbe]">
-                <h1 className="text-white">
-                  Желаете ли вы сохранить данное изображение?
-                </h1>
-
-                <div className="flex gap-3">
-                  <button
-                    onClick={(e) => handleSaveImg(e)}
-                    className="bg-[#2f5239] font-semibold py-1 px-3 hover:bg-[#3e9256] duration-200"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onMouseDown={(e) => handleCloseModal(undefined, e)}
-                    className="background bg-[#52362f] font-semibold py-1 px-3 hover:bg-[#833927] duration-200"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-        {/* <canvas id="canvas" className=""></canvas> */}
-        <motion.div
-          ref={constraintsRef}
-          className={` bg-[#000000b5] relative `}
-        >
-          {/* <motion.div style={{ width, height, x, y }} className="absolute">
-            <motion.div
-              onMouseDownCapture={(e) => handleMove(e)}
-              style={{ height, width: "2px" }}
-              className=" absolute cursor-pointer left-[-5px] border-2  border-red-600"
-              onClick={() => handleResizeCanvas("left")}
-            ></motion.div>
-            <motion.div
-              className="absolute cursor-pointer  right-[-5px] border-2 border-red-600"
-              style={{ height, width: "2px" }}
-              onClick={() => handleResizeCanvas("right")}
-            ></motion.div>
-            <motion.div
-              style={{ width, height: "2px" }}
-              className="absolute cursor-pointer top-[-5px] border-2 border-red-600"
-              onClick={() => handleResizeCanvas("top")}
-            ></motion.div>
-            <motion.div
-              style={{ width, height: "2px" }}
-              className="absolute cursor-pointer bottom-[-5px] border-2 border-red-600"
-              onClick={() => handleResizeCanvas("bottom")}
-            ></motion.div>
-          </motion.div> */}
-
-          <motion.canvas
-            width={areaImg.width}
-            height={areaImg.height}
-            id="canvas"
-            drag
-            onTap={(e) => handleChangeDiv()}
-            onTapCancel={(e) => handleChangeDiv()}
-            dragMomentum={false}
-            dragSnapToOrigin={false}
-            dragElastic={0}
-            dragConstraints={constraintsRef}
-            style={{
-              x,
-              y,
-              width,
-              height,
-            }}
-            className="backdrop-brightness-[4] bg-[#00000000] opacity-50  z-10 absolute"
-          ></motion.canvas>
-          <motion.img
-            ref={refCurrentImg}
-            id="source"
-            className="z-[-1] relative"
-            src={props.imageUrl}
-            alt=""
-          />
-        </motion.div>
-        <motion.div
-          style={{
-            y: window.document.body.clientWidth > 1000 ? scrollY : "",
-          }}
-          className="flex mt-5 bg-[#ffce74] max-sm:w-[80%] m-auto rounded-md rounded-e-3xl rounded-bl-3xl p-5 flex-col gap-4 items-center"
-        >
-          <div className="flex items-center gap-5">
-            <label className="w-[50px]" htmlFor="height-input">
-              Height
-            </label>
-            <input
-              max={1024}
-              id="height-input"
-              className="border-2 px-4 py-2 w-full shadow-md border-none rounded-md"
-              type="number"
-              // value={height.getPrevious()}
-              value={areaImg.height.toString().replace(/^0+/, "")}
-              onChange={(e) => handleChange(0, e)}
-            />
-          </div>
-
-          <div className="flex items-center gap-5">
-            <label className="w-[50px]" htmlFor="width-input">
-              Width
-            </label>
-            <input
-              max={1024}
-              id="width-input"
-              className="border-2 px-4 py-2 w-full border-none shadow-md rounded-md"
-              type="number"
-              // value={width.getPrevious()}
-              value={areaImg.width.toString().replace(/^0+/, "")}
-              onChange={(e) => handleChange(1, e)}
-            />
-          </div>
-          <div className="flex items-center gap-5">
-            <label className="w-[50px]" htmlFor="top-input">
-              Top
-            </label>
-            <input
-              id="top-input"
-              className="border-2 bg-white px-4 w-full py-2 border-none shadow-md rounded-md"
-              type="number"
-              value={areaImg?.top}
-              disabled
-              onChange={(e) => handleChange(2, e)}
-            />
-          </div>
-          <div className="flex items-center gap-5">
-            <label className="w-[50px]" htmlFor="left-input">
-              Left
-            </label>
-            <input
-              id="left-input"
-              className="border-2 bg-white px-4 w-full py-2 border-none shadow-md rounded-md"
-              type="number"
-              disabled
-              value={areaImg?.left}
-              onChange={(e) => handleChange(3, e)}
-            />
-          </div>
-          <div className="">
-            <button
-              onClick={(e) => handleCutImage()}
-              className="border rounded-sm py-2 px-6 border-black hover:bg-black hover:text-white duration-300 ease-in-out"
-            >
-              Cut image
-            </button>
-          </div>
-        </motion.div>
+    <div className="container m-auto ">
+      <div className="relative ">
+        <img
+          className="brightness-50  block max-w-full"
+          id="image"
+          src={`${props.imageUrl}`}
+          alt="Picture"
+        />
       </div>
-    </>
+      {showImg && (
+        <div className="z-[100] bg-[#000000d2] w-full backdrop-blur-xl h-full fixed top-0 left-0"></div>
+      )}
+      <div
+        className="m-auto z-[150] hidden  fixed top-[25%] bottom-0 left-0 right-0"
+        id="result"
+      ></div>
+
+      <div
+        id="buttons"
+        className="right-0 left-0 mt-5 z-[150] fixed hidden text-center"
+      >
+        <button
+          onClick={(e) => handleSaveImg(e)}
+          className="text-[#e6e6e6] bg-[green] sm:hover:bg-[#13ac13] px-4 py-2 mr-5"
+        >
+          Save
+        </button>
+        <button
+          onClick={() => handleCloseModal()}
+          className="text-[#e6e6e6] bg-[#991d1d] sm:hover:bg-[#bd1f1f] px-4 py-2"
+        >
+          No save
+        </button>
+      </div>
+      <div>
+        <button
+          className="text-white absolute top-0 right-0 max-sm:w-[50px] sm:w-[80px] max-sm:text-[12px] max-sm:px-2 max-sm:py-1 border-2 mt-2 bg-[#0000007a] border-red-500 px-4 py-2"
+          type="button"
+          id="button-crop"
+        >
+          Crop
+        </button>
+        <button
+          className="text-white absolute max-sm:top-8 max-sm:w-[50px] sm:w-[80px]  sm:top-[50px] max-sm:text-[12px] max-sm:px-2 max-sm:py-1 right-0 bg-[#0000007a] border-2 mt-2 border-[green] px-4 py-2"
+          type="button"
+          id="button-reset"
+        >
+          Reset
+        </button>
+        <button
+          onClick={() => handleBack()}
+          className="text-white absolute max-sm:top-0 max-sm:w-[50px] sm:w-[80px] text-[22px]  sm:top-[0] max-sm:text-[12px] max-sm:px-2 max-sm:py-1 left-0 bg-[#0000007a]  mt-2  px-2 py-1"
+          type="button"
+        >
+          &larr;
+        </button>
+      </div>
+    </div>
   );
 }

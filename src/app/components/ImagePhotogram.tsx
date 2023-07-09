@@ -12,7 +12,6 @@ export interface ImageProps {
   imagesApi: string[];
 }
 
-
 export default function ImagePhoto({
   currentFile,
   setModalBoolean,
@@ -27,17 +26,19 @@ export default function ImagePhoto({
   }, [imagesApi, currentFile]);
 
   const handleWatchImage = (index: number) => {
-    Context()
+    Context();
 
     let tempIndex: number[] = [];
 
     if (setCurrentIndex !== undefined && setModalBoolean !== undefined) {
-      if (index === 0) {
-        tempIndex = [imagesApi.length - 1, index, index + 1];
-      } else if (index === imagesApi.length - 1) {
-        tempIndex = [index - 1, index, 0];
-      } else {
-        tempIndex = [index - 1, index, index + 1];
+      if (images.length > 1) {
+        if (index === 0) {
+          tempIndex = [imagesApi.length - 1, index, index + 1];
+        } else if (index === imagesApi.length - 1) {
+          tempIndex = [index - 1, index, 0];
+        } else {
+          tempIndex = [index - 1, index, index + 1];
+        }
       }
       setCurrentIndex(tempIndex);
       setModalBoolean(true);
@@ -56,7 +57,7 @@ export default function ImagePhoto({
     initial: {
       transition: { duration: 1 },
       opacity: 1,
-      filter: 'brightness(1)',
+      filter: "brightness(1)",
     },
   };
 
@@ -71,7 +72,7 @@ export default function ImagePhoto({
             viewport={{ once: true }}
             whileInView="initial"
             variants={variants}
-            whileHover={{filter: 'brightness(1.25)',}}
+            whileHover={{ filter: "brightness(1.25)" }}
             onClick={(e) => handleWatchImage(index)}
             style={{ height: 300 }}
             className="rounded-md shadow-md cursor-pointer z-[0] object-cover"

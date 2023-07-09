@@ -104,12 +104,7 @@ export default function Main() {
     let image = new Image();
 
     image.onload = function () {
-      if (
-        image.width < 300 ||
-        image.height < 300 ||
-        image.width > 1280 ||
-        image.height > 1280
-      ) {
+      if (image.width < 300 || image.height < 300) {
         alert("Изображение не подходит");
         return false;
       } else {
@@ -223,7 +218,6 @@ export default function Main() {
       </Head>
       {showRedactor && (
         <>
-
           <ImageRedactor
             imageUrl={currentFile}
             setCurrentFile={setCurrentFile}
@@ -314,11 +308,11 @@ export default function Main() {
             Photogram
           </h1>
           <div className="flex flex-col items-center align-middle h-min justify-center gap-2 ">
-            <p className="text-5xl text-[#7d7d7d] font-medium">
+            <p className="text-5xl text-[#7d7d7d] font-medium max-sm:text-center">
               Your pictures:{" "}
             </p>
-            <h1 className="text-1xl">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            <h1 className="text-md text-center text-[gray]">
+            Image must be larger than 300px
             </h1>
             <input
               accept=".jpg, .png, .jpeg"

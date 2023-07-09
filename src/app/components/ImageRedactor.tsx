@@ -64,6 +64,11 @@ export default function ImageRedactor(props: IProps) {
         return;
       }
 
+      if (roundedCanvas.width < 300 || roundedCanvas.height < 300) {
+        alert("Image is too small")
+        return;
+      }
+
       setShowImg((value) => (value === true ? false : true));
 
       setNewUrlImg(roundedCanvas.toDataURL());
@@ -155,9 +160,10 @@ export default function ImageRedactor(props: IProps) {
 
     props.setShowRedactor(false);
   };
+
   return (
     <div className="container m-auto ">
-      <div className="relative ">
+      <div className="relative mt-20">
         <img
           className="brightness-50  block max-w-full"
           id="image"

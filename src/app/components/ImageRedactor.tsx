@@ -37,7 +37,9 @@ export default function ImageRedactor(props: IProps) {
     var buttons = document.getElementById("buttons") as HTMLDivElement;
     var croppable = false;
     var cropper = new Cropper(image, {
-      // aspectRatio: 1,
+      aspectRatio: 1,
+      minCropBoxHeight: 300,
+      minCropBoxWidth: 300,
       viewMode: 1,
       ready: function () {
         croppable = true;
@@ -65,7 +67,7 @@ export default function ImageRedactor(props: IProps) {
       }
 
       if (roundedCanvas.width < 300 || roundedCanvas.height < 300) {
-        alert("Image is too small")
+        alert("Image is too small");
         return;
       }
 
@@ -163,7 +165,7 @@ export default function ImageRedactor(props: IProps) {
 
   return (
     <div className="container m-auto ">
-      <div className="relative mt-20 w-[400px] h-[400px] m-auto">
+      <div className="relative mt-20 min-[400px]:w-[400px] min-[400px]:h-[400px] m-auto">
         <img
           className="brightness-50  block max-w-full"
           id="image"
@@ -175,13 +177,13 @@ export default function ImageRedactor(props: IProps) {
         <div className="z-[100] bg-[#000000d2] w-full backdrop-blur-xl h-full fixed top-0 left-0"></div>
       )}
       <div
-        className="m-auto z-[150] hidden  fixed top-[25%] bottom-0 left-0 right-0"
+        className="m-auto max-sm:py-4 z-[150] max-[500px]:w-[300px]  min-[500px]:w-[500px] min-[500px]:h-[500px] hidden fixed top-0 bottom-0 left-0 right-0"
         id="result"
       ></div>
 
       <div
         id="buttons"
-        className="right-0 left-0 mt-5 z-[150] fixed hidden text-center"
+        className="right-0 m-auto max-sm:w-fit left-0 mt-5 z-[150] fixed hidden text-center"
       >
         <button
           onClick={(e) => handleSaveImg(e)}

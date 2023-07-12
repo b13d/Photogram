@@ -104,7 +104,12 @@ export default function Main() {
     let image = new Image();
 
     image.onload = function () {
-      if (image.width < 300 || image.height < 300) {
+      if (
+        image.width < 300 ||
+        image.height < 300 ||
+        image.height > 1920 ||
+        image.width > 1920
+      ) {
         alert("Изображение не подходит");
         return false;
       } else {
@@ -312,7 +317,7 @@ export default function Main() {
               Your pictures:{" "}
             </p>
             <h1 className="text-md text-center text-[gray]">
-            Image must be larger than 300px
+              Image must be larger than 300px and less than 1920px
             </h1>
             <input
               accept=".jpg, .png, .jpeg"
